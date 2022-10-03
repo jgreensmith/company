@@ -1,9 +1,10 @@
+import Layout from "../components/common/Layout";
 
 
 export default function Home() {
   return (
-    <div>
+    <Layout title='home' seo='seo home page dank boi'>
       boo
-    </div>
+    </Layout>
   )
 }
