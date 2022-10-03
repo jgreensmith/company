@@ -1,6 +1,7 @@
 import { Container, createTheme, CssBaseline, ThemeProvider, Toolbar } from '@mui/material'
 import Head from 'next/head'
 import React from 'react'
+import Footer from './Footer'
 import Navbar from './Navbar'
 
 const Layout = ({title, seo, children}) => {
@@ -80,7 +81,7 @@ const Layout = ({title, seo, children}) => {
             <Toolbar />
 
                 {children}
-
+            <Footer />
         </Container >
     </ThemeProvider>
 
