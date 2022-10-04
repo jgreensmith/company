@@ -1,8 +1,9 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import NextLink from 'next/link';
 
 import {
     AppBar,
+    Avatar,
     Badge,
     Button,
     CircularProgress,
@@ -23,6 +24,7 @@ import {
 } from '@mui/material';
 
 import { Box } from '@mui/system';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 
 
@@ -50,8 +52,8 @@ const Navbar = (props) => {
 
     const { window } = props;
     const [mobileOpen, setMobileOpen] = useState(false);
-    
-
+    const { data: session, status } = useSession()
+    const [links, setLinks] = useState({})
 
 
     //console.log(totalQuantities);
@@ -59,15 +61,26 @@ const Navbar = (props) => {
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
-    
-   
-
-    const links = {
+    const authLinks = {
+        account: "Account",
+        dashboard: "Dashboard"
+    }
+    const navLinks = {
         about: "About",
         portfolio: "Portfolio",
         pricing: "Pricing"
 
     }
+    
+   useEffect(() => {
+    if(session && status === "authenticated") {
+        setLinks(authLinks)
+    } else {
+       setLinks(navLinks)
+    }
+   }, [session])
+
+    
 
 
     const drawer = (
@@ -88,7 +101,7 @@ const Navbar = (props) => {
     
 
     const container = window !== undefined ? () => window().document.body : undefined;
-
+    console.log(session)
 
     return (
         <React.Fragment>
@@ -107,7 +120,7 @@ const Navbar = (props) => {
                         <div style={{width: '100%', maxWidth: '200px'}}>
 
                         <NextLink href="/">
-                            click
+                            home
                         </NextLink>
                         </div>
                         <List sx={{ display: { sm: "flex", xs: "none" }, ml: 'auto', mr: 3 }}>
@@ -130,6 +143,28 @@ const Navbar = (props) => {
                                 </NextLink>
                             ))}
                         </List>
+                        {
+                            status === "authenticated" ? 
+                            <div>
+                                { session.user.name &&
+                                    <div>
+                                    <Avatar sx={{bgcolor: 'secondary.main'}}>
+                                        {Array.from(session.user.name)[0]}
+                                    </Avatar>
+                                </div>}
+                                <div>
+                                    <Button color='secondary' variant='text' onClick={() => signOut()}>
+                                        Log Out
+                                    </Button>
+                                </div>
+                            </div>
+                            :
+                            <div>
+                                <Button color='secondary' variant='contained' onClick={() => signIn()}>
+                                    Log in
+                                </Button>
+                            </div>
+                        }
                         
 
                         </Toolbar>
