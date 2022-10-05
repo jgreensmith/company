@@ -153,14 +153,14 @@ const Navbar = (props) => {
                                     </Avatar>
                                 </div>}
                                 <div>
-                                    <Button color='secondary' variant='text' onClick={() => signOut()}>
+                                    <Button color='secondary' variant='text' onClick={() => signOut({ callbackUrl: 'http://localhost:3000' })}>
                                         Log Out
                                     </Button>
                                 </div>
                             </div>
                             :
                             <div>
-                                <Button color='secondary' variant='contained' onClick={() => signIn()}>
+                                <Button color='secondary' variant='contained' onClick={() => signIn(undefined, { callbackUrl: 'http://localhost:3000/dashboard' })}>
                                     Log in
                                 </Button>
                             </div>
