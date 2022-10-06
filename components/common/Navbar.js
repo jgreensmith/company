@@ -6,7 +6,6 @@ import {
     Avatar,
     Badge,
     Button,
-    CircularProgress,
     CssBaseline,
     Divider,
     Drawer,
@@ -153,14 +152,14 @@ const Navbar = (props) => {
                                     </Avatar>
                                 </div>}
                                 <div>
-                                    <Button color='secondary' variant='text' onClick={() => signOut({ callbackUrl: 'http://localhost:3000' })}>
+                                    <Button color='secondary' variant='text' onClick={() => signOut({ callbackUrl: '/' })}>
                                         Log Out
                                     </Button>
                                 </div>
                             </div>
                             :
                             <div>
-                                <Button color='secondary' variant='contained' onClick={() => signIn(undefined, { callbackUrl: 'http://localhost:3000/dashboard' })}>
+                                <Button color='secondary' variant='contained' onClick={() => signIn(undefined, { callbackUrl: '/dashboard' })}>
                                     Log in
                                 </Button>
                             </div>

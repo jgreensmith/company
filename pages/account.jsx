@@ -10,7 +10,7 @@ const Dashboard = () => {
 
 
   return (
-    <Layout>welcome {session?.user.name} to your dutty dashboard
+    <Layout>welcome {session?.user.name} to your account settings
 
     </Layout>
   )
