@@ -28,3 +28,8 @@ a {
   height: 100vh;
   color: whitesmoke;
 }
+.auth {
+  border-radius: 10px;
+  background: linear-gradient(to right, #ffffff80, #ffffff20);
+  padding: 12px;
+}
