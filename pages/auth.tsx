@@ -1,5 +1,5 @@
 import { NextPage } from 'next'
-import React, { useState } from 'react'
+import React, { ChangeEvent, useState } from 'react'
 import { useSession, signIn, getProviders } from "next-auth/react";
 
 import { Box, Button, Container, Typography, Divider, TextField, IconButton, InputAdornment, FilledInput, InputLabel, FormControl } from '@mui/material';
@@ -7,19 +7,50 @@ import { CenteredDiv, InputContainer } from '../utils/styles'
 import { FcGoogle } from 'react-icons/fc'
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
 
+interface IFormData {
+  email: string
+  password: string
+}
+
 
 const Auth: NextPage = ({providers} : any) => {
-    const [authType, setAuthType] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
+    const [authType, setAuthType] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
+    const [confirmPassword, setConfirmPassword] = useState("")
+    const [firstName, setFirstName] = useState("")
+    const [lastName, setLastName] = useState("")
+
+
+    const [formData, setFormData] = useState<IFormData>({
+      email: "",
+      password: ""
+    })
 
     const handleShowPassword = () => {
       setShowPassword(!showPassword);
     }
-    const handleChange = () => {
 
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value
+      })
     }
-    const handleSubmit = () => {
 
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault()
+      if(!authType) {
+        const registerData = {
+          name: `${firstName} ${lastName}`,
+          email: formData.email,
+          password: formData.password
+        }
+        console.log(registerData)
+      } else {
+        
+        console.log(formData)
+      }
+      
     }
 
 
@@ -51,38 +82,39 @@ const Auth: NextPage = ({providers} : any) => {
               <CenteredDiv sx={{ml: 2, mt: 2, pr: 1}}>
                     {
                       !authType && (
-                    <React.Fragment>
+                        <React.Fragment>
+
                         <InputContainer >
                             <TextField 
-                                name="firstname"
-                                //value={authForm.firstname}
+                                name="name"
+                                value={firstName}
                                 variant="filled"
                                 fullWidth
-                                label="Firstname"       
+                                label="First Name"       
                                 sx={{backgroundColor: "#f1f3fa"}}
-                                onChange={handleChange}
+                                onChange={(e) => setFirstName(e.target.value)}
                                 />
                         </InputContainer>
-                        <InputContainer>
+                        <InputContainer >
                             <TextField 
-                                name="lastname"
-                                //value={authForm.lastname}
-                                fullWidth
+                                name="name"
+                                value={lastName}
                                 variant="filled"
-                                label="Lastname"
+                                fullWidth
+                                label="Last Name"       
                                 sx={{backgroundColor: "#f1f3fa"}}
-                                onChange={handleChange}
+                                onChange={(e) => setLastName(e.target.value)}
                                 />
-                        </InputContainer>
+                        </InputContainer>                 
                         </React.Fragment>
                       )
                     }
                     <InputContainer >
                         <TextField 
-                            name="username"
-                            //value={authForm.username}
+                            name="email" 
+                            value={formData.email}
                             variant="filled"
-                            label="Username"
+                            label="Email"
                             fullWidth
                             sx={{ backgroundColor: "#f1f3fa"}}
                             onChange={handleChange}
@@ -91,9 +123,10 @@ const Auth: NextPage = ({providers} : any) => {
                     <InputContainer >
                     <FormControl sx={{width: '100%'}}>
                       <FilledInput
+                        name='password'
                         id="filled-adornment-password"
                         type={showPassword ? 'text' : 'password'}
-                        //value={authForm.password}
+                        value={formData.password}
                         onChange={handleChange}
                         fullWidth
                         sx={{backgroundColor: "#f1f3fa"}}
@@ -119,8 +152,8 @@ const Auth: NextPage = ({providers} : any) => {
                       <FilledInput
                         id="filled-adornment-password"
                         type={showPassword ? 'text' : 'password'}
-                        //value={authForm.password}
-                        onChange={handleChange}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
                         sx={{backgroundColor: "#f1f3fa"}}
                         endAdornment={
                           <InputAdornment position="end">
@@ -139,7 +172,8 @@ const Auth: NextPage = ({providers} : any) => {
                   </InputContainer>
                       )
                     }
-                    
+                    <Button  variant="contained" size="large" type="submit" fullWidth sx={{p:2}}>Submit</Button>
+
                     </CenteredDiv>
    
                 
