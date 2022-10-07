@@ -71,6 +71,7 @@ const Navbar = (props) => {
 
     }
     
+    
    useEffect(() => {
     if(session && status === "authenticated") {
         setLinks(authLinks)
@@ -159,7 +160,7 @@ const Navbar = (props) => {
                             </div>
                             :
                             <div>
-                                <Button color='secondary' variant='contained' onClick={() => signIn(undefined, { callbackUrl: '/dashboard' })}>
+                                <Button color='secondary' variant='contained' href='/auth'>
                                     Log in
                                 </Button>
                             </div>
