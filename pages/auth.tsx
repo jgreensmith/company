@@ -13,8 +13,8 @@ interface IFormData {
 }
 
 
-const Auth: NextPage = ({providers} : any) => {
-    const [authType, setAuthType] = useState(false)
+const Auth: NextPage = () => {
+    const [authType, setAuthType] = useState(true)
     const [showPassword, setShowPassword] = useState(false)
     const [confirmPassword, setConfirmPassword] = useState("")
     const [firstName, setFirstName] = useState("")
@@ -36,16 +36,23 @@ const Auth: NextPage = ({providers} : any) => {
         [e.target.name]: e.target.value
       })
     }
-
-    const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault()
-      if(!authType) {
+    const register = () => {
+      if(confirmPassword === formData.password) {
         const registerData = {
           name: `${firstName} ${lastName}`,
           email: formData.email,
           password: formData.password
         }
         console.log(registerData)
+      } else {
+        alert("Passwords don't match")
+      }
+    }
+
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault()
+      if(!authType) {
+        register()
       } else {
         
         console.log(formData)
@@ -58,8 +65,8 @@ const Auth: NextPage = ({providers} : any) => {
     <Box className='auth-background' sx={{backgroundImage: "url('/blurry-gradient-haikei.svg')"}}>
         <Box className='auth' sx={{width: {xs: '80%', sm: '420px'}}}>
             <CenteredDiv>
-                <Typography variant='h5'>{authType ? "Login" : "Register"}</Typography>
-                <Typography variant='body1'>
+                <Typography color='black' variant='h5'>{authType ? "Log In" : "Create an account"}</Typography>
+                <Typography color='black' variant='body1'>
 
                     {authType ? 
                         "Not registered yet?"
@@ -67,14 +74,14 @@ const Auth: NextPage = ({providers} : any) => {
                         "Already have an account?"
                     }
                     <Button variant='text' sx={{textTransform: 'capitalize'}} onClick={() => setAuthType(!authType)}>
-                    {!authType ? "Login" : "Register"}
+                    {!authType ? "Log In" : "Create Account"}
                     </Button>
                 </Typography>
             </CenteredDiv>
             <Divider />
             <CenteredDiv sx={{width: '100%', mt: 2, mb: 1, p: '0 10px'}}>
-                <Button fullWidth variant='contained' startIcon={<FcGoogle  />} sx={{backgroundColor: "#000000e0", p: 1}} onClick={() => signIn('google', { callbackUrl: '/dashboard' })}>
-                    <Typography variant="body1" align='center' sx={{textTransform: 'capitalize', pl: 2}}>{authType ? "Login" : "Register"} With Google</Typography> 
+                <Button fullWidth variant='contained' startIcon={<FcGoogle />} sx={{backgroundColor: "#000000e0", p: 1}} onClick={() => signIn('google', { callbackUrl: '/dashboard' })}>
+                    <Typography variant="body1" align='center' sx={{textTransform: 'capitalize', pl: 2}}>{authType ? "Log In" : "Create account"} With Google</Typography> 
                 </Button>
             </CenteredDiv>
             <Divider>or</Divider>
@@ -172,8 +179,10 @@ const Auth: NextPage = ({providers} : any) => {
                   </InputContainer>
                       )
                     }
-                    <Button  variant="contained" size="large" type="submit" fullWidth sx={{p:2}}>Submit</Button>
+                    <CenteredDiv sx={{width: '100%', mt: 2, mb: 1, pr: 1}}>
 
+                    <Button  variant="contained" type="submit" fullWidth sx={{p:2}}>{authType ? "Log In" : "Create Account"}</Button>
+                    </CenteredDiv>
                     </CenteredDiv>
    
                 
@@ -185,10 +194,3 @@ const Auth: NextPage = ({providers} : any) => {
 
 export default Auth
 
-export async function getServerSideProps() {
-    return {
-        props: {
-            providers: await getProviders()
-        }
-    }
-}
