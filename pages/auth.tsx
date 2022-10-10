@@ -6,6 +6,8 @@ import { Box, Button, Container, Typography, Divider, TextField, IconButton, Inp
 import { CenteredDiv, InputContainer } from '../utils/styles'
 import { FcGoogle } from 'react-icons/fc'
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
+import Email from 'next-auth/providers/email';
+import { useRouter } from 'next/router';
 
 interface IFormData {
   email: string
@@ -19,6 +21,7 @@ const Auth: NextPage = () => {
     const [confirmPassword, setConfirmPassword] = useState("")
     const [firstName, setFirstName] = useState("")
     const [lastName, setLastName] = useState("")
+    const router = useRouter()
 
 
     const [formData, setFormData] = useState<IFormData>({
@@ -36,28 +39,48 @@ const Auth: NextPage = () => {
         [e.target.name]: e.target.value
       })
     }
-    const register = () => {
+
+  
+
+    const register = async () => {
       if(confirmPassword === formData.password) {
-        const registerData = {
-          name: `${firstName} ${lastName}`,
-          email: formData.email,
-          password: formData.password
-        }
-        console.log(registerData)
+        const name = `${firstName} ${lastName}`
+          
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name, email: formData.email, password: formData.password })
+        })
+        .then( async () => {
+          await loginUser()
+        })
+        .catch((error) => {
+          console.log(error)
+        });
+        console.log(res)
       } else {
         alert("Passwords don't match")
       }
     }
 
+    const loginUser = async () => {
+      const res: any = await signIn("credentials", {
+        redirect: false,
+        email: formData.email,
+        password: formData.password,
+        callbackUrl: '/dashboard'
+      })
+      
+      res.error ? alert(res.error) : router.push(res.url)
+
+    }
+
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault()
-      if(!authType) {
-        register()
-      } else {
-        
-        console.log(formData)
-      }
-      
+      !authType ? register() : loginUser()
     }
 
 
