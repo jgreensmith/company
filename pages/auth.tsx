@@ -1,9 +1,9 @@
 import { NextPage } from 'next'
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import { useSession, signIn, getProviders } from "next-auth/react";
 
-import { Box, Button, Container, Typography, Divider, TextField, IconButton, InputAdornment, FilledInput, InputLabel, FormControl } from '@mui/material';
-import { CenteredDiv, InputContainer } from '../utils/styles'
+import { Box, Button, Container, Typography, Divider, TextField, IconButton, InputAdornment, FilledInput, InputLabel, FormControl, Tooltip, Fade, Paper } from '@mui/material';
+import { CenteredDiv, FlexEnd, InputContainer } from '../utils/styles'
 import { FcGoogle } from 'react-icons/fc'
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
 import Email from 'next-auth/providers/email';
@@ -23,6 +23,8 @@ const Auth: NextPage = () => {
     const [lastName, setLastName] = useState("")
     const [confirmPasswordError, setConfirmPasswordError] = useState(false)
     const [error, setError] = useState('')
+    const [passwordStrength, setPasswordStrength] = useState("weak")
+    const [passStrColor, setPassStrColor] = useState("red")
     const router = useRouter()
 
 
@@ -42,6 +44,27 @@ const Auth: NextPage = () => {
       })
     }
 
+    let strongPassword = new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})')
+    let mediumPassword = new RegExp('((?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{6,}))|((?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])(?=.{8,}))')
+
+    const passwordStrengthHandler = (password: string) => {
+      if(strongPassword.test(password)) {
+        setPasswordStrength("Strong");
+        setPassStrColor("#22dd22")
+      } else if(mediumPassword.test(password)) {
+        setPasswordStrength("medium");
+        setPassStrColor("#FFBF00")
+
+      } else {
+        setPasswordStrength("weak");
+        setPassStrColor("red")
+      }
+    }
+
+    useEffect(() => {
+      passwordStrengthHandler(formData.password)
+    }, [formData.password])
+    
   
 
     const register = async () => {
@@ -151,7 +174,7 @@ const Auth: NextPage = () => {
                             />
                     </InputContainer>
                     <InputContainer >
-                    <FormControl sx={{width: '100%'}}>
+                    <FormControl sx={{width: '100%'}} error={passwordStrength === "weak" ? true : false}>
                       <FilledInput
                         name='password'
                         id="filled-adornment-password"
@@ -175,6 +198,17 @@ const Auth: NextPage = () => {
                       />
                   </FormControl>
                   </InputContainer>
+                  {!authType && 
+                      <FlexEnd sx={{pr: 4, pb: 1}}>
+                        <Tooltip 
+                        TransitionComponent={Fade}
+                        TransitionProps={{ timeout: 600 }} 
+                        placement="top-end"
+                        title='Password should contain atleast: eight characters, one uppercase, one lowercase, one digit, one special character'>
+                          <div className='password-strength'><p>Password strength: <span style={{color: passStrColor}} >{passwordStrength}</span></p></div>
+                        </Tooltip>
+                      </FlexEnd>
+                    }
                     {
                       !authType && (
                         <InputContainer >
