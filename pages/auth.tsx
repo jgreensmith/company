@@ -204,7 +204,7 @@ const Auth: NextPage = () => {
                         TransitionComponent={Fade}
                         TransitionProps={{ timeout: 600 }} 
                         placement="top-end"
-                        title='Password should contain atleast: eight characters, one uppercase, one lowercase, one digit, one special character'>
+                        title='Password should contain atleast: eight characters, one uppercase, one lowercase, one numerical digit, one special character'>
                           <div className='password-strength'><p>Password strength: <span style={{color: passStrColor}} >{passwordStrength}</span></p></div>
                         </Tooltip>
                       </FlexEnd>
