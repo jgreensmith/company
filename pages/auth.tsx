@@ -21,6 +21,8 @@ const Auth: NextPage = () => {
     const [confirmPassword, setConfirmPassword] = useState("")
     const [firstName, setFirstName] = useState("")
     const [lastName, setLastName] = useState("")
+    const [confirmPasswordError, setConfirmPasswordError] = useState(false)
+    const [error, setError] = useState('')
     const router = useRouter()
 
 
@@ -56,15 +58,11 @@ const Auth: NextPage = () => {
         })
         .then((res) => res.json())
         .then((data) => {
-          if (data.error) {
-            console.log(data)
-          } else {
-            loginUser()
-          }
+          data.error ? setError(data.error) : loginUser()
         });
         
       } else {
-        alert("Passwords don't match")
+        setConfirmPasswordError(true)
       }
     }
 
@@ -76,7 +74,7 @@ const Auth: NextPage = () => {
         callbackUrl: '/dashboard'
       })
       
-      res.error ? alert(res.error) : router.push(res.url)
+      res.error ? setError(res.error) : router.push(res.url)
 
     }
 
@@ -180,7 +178,7 @@ const Auth: NextPage = () => {
                     {
                       !authType && (
                         <InputContainer >
-                    <FormControl sx={{width: '100%'}} >
+                    <FormControl sx={{width: '100%'}} error={!confirmPasswordError ? false : true} >
                       <FilledInput
                         id="filled-adornment-password"
                         type={showPassword ? 'text' : 'password'}
@@ -201,9 +199,12 @@ const Auth: NextPage = () => {
                         placeholder="Confirm Password"
                       />
                   </FormControl>
+                  {confirmPasswordError && <Typography variant="body1" sx={{color: 'error.main'}} >Please make sure passwords match</Typography>}
                   </InputContainer>
                       )
                     }
+                    {error && <Typography variant="body1" sx={{color: 'error.main'}} >{error}</Typography>}
+
                     <CenteredDiv sx={{width: '100%', mt: 2, mb: 1, pr: 1}}>
 
                     <Button  variant="contained" type="submit" fullWidth sx={{p:2}}>{authType ? "Log In" : "Create Account"}</Button>

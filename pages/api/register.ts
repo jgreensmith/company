@@ -15,16 +15,21 @@ const validateEmail = (email: string): boolean => {
   return regEx.test(email);
 }
 const validatePassword = (password: string): boolean => {
-    const regEx = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?])[A-Za-z\d#$@!%&*?]{8,30}$/
+    const regEx = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?])[A-Za-z\d#$@!%&*?]{6,30}$/
   return regEx.test(password);
 }
 const validateForm = async (
+    name: string,
     email: string,
     password: string
   ) => {
+
+    if(name.length < 2) {
+      return { error: "Please enter your name" }
+    }
     
     if (!validateEmail(email)) {
-      return { error: "Email is invalid" };
+      return { error: "Please enter a valid email address" };
     }
   
     await dbConnect();
@@ -54,7 +59,7 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
     const { name, email, password } = req.body
 
             
-    const errorMessage = await validateForm( email, password);
+    const errorMessage = await validateForm( name, email, password);
     if (errorMessage) {
         return res.status(400).json(errorMessage as ResponseData);
     }
