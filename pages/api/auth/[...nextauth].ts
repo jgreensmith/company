@@ -31,6 +31,7 @@ export default NextAuth({
             },
             async authorize(credentials) {
                 await dbConnect();
+                // @ts-ignore
                 const user = await User.findOne({email: credentials?.email});
 
                 if(!user) {

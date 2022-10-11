@@ -46,7 +46,7 @@ const Auth: NextPage = () => {
       if(confirmPassword === formData.password) {
         const name = `${firstName} ${lastName}`
           
-        const res = await fetch('/api/register', {
+        await fetch('/api/register', {
           method: 'POST',
           headers: {
             Accept: "application/json",
@@ -54,13 +54,15 @@ const Auth: NextPage = () => {
           },
           body: JSON.stringify({ name, email: formData.email, password: formData.password })
         })
-        .then( async () => {
-          await loginUser()
-        })
-        .catch((error) => {
-          console.log(error)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            console.log(data)
+          } else {
+            loginUser()
+          }
         });
-        console.log(res)
+        
       } else {
         alert("Passwords don't match")
       }

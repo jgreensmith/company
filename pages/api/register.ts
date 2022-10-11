@@ -28,6 +28,7 @@ const validateForm = async (
     }
   
     await dbConnect();
+    // @ts-ignore
     const emailUser = await User.findOne({ email: email });
   
     if (emailUser) {
