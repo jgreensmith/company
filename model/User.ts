@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
   name: {
     type: String,
-    requeired: true,
+    required: true,
   },
   email: {
     type: String,
@@ -17,6 +17,7 @@ const userSchema = new Schema({
     required: true,
     minlength: 5,
   },
+  
   
 });
 
