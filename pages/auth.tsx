@@ -65,7 +65,19 @@ const Auth: NextPage = () => {
       passwordStrengthHandler(formData.password)
     }, [formData.password])
     
-  
+    const stripeSetUp = async () => {
+      await fetch('/api/create-stripe', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({email: formData.email})
+
+      }).then((res) => res.json())
+      .then((data) => {
+        console.log(data)
+      })
+    }
 
     const register = async () => {
       if(confirmPassword === formData.password) {
@@ -81,7 +93,7 @@ const Auth: NextPage = () => {
         })
         .then((res) => res.json())
         .then((data) => {
-          data.error ? setError(data.error) : loginUser()
+          data.error ? setError(data.error) : stripeSetUp()
         });
         
       } else {
