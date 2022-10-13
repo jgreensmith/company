@@ -12,7 +12,13 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
                 type: 'standard',
                 email: email
             })
-            res.status(200).json(account)
+            const accountLink = await stripe.accountLinks.create({
+                account: account.id,
+                refresh_url: 'http://localhost:3000/auth',
+                return_url: 'http://localhost:3000/dashboard',
+                type: 'account_onboarding'
+            })
+            res.status(200).json(accountLink)
         } catch (error) {
             res.status(error.statusCode || 500).json(error.message);
         }

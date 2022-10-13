@@ -6,7 +6,7 @@ import { Box, Button, Container, Typography, Divider, TextField, IconButton, Inp
 import { CenteredDiv, FlexEnd, InputContainer } from '../utils/styles'
 import { FcGoogle } from 'react-icons/fc'
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
-import Email from 'next-auth/providers/email';
+import Loader from '../components/svg/Loader';
 import { useRouter } from 'next/router';
 
 interface IFormData {
@@ -26,12 +26,14 @@ const Auth: NextPage = () => {
     const [passwordStrength, setPasswordStrength] = useState("weak")
     const [passStrColor, setPassStrColor] = useState("red")
     const router = useRouter()
+    const [loader, setLoader] = useState(false)
 
-
+    
     const [formData, setFormData] = useState<IFormData>({
       email: "",
       password: ""
     })
+
 
     const handleShowPassword = () => {
       setShowPassword(!showPassword);
@@ -73,10 +75,16 @@ const Auth: NextPage = () => {
         },
         body: JSON.stringify({email: formData.email})
 
-      }).then((res) => res.json())
-      .then((data) => {
-        console.log(data)
       })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          console.log(data.error) 
+        } else {
+          loginUser(data.url)
+        }  
+      })
+      setLoader(true) 
     }
 
     const register = async () => {
@@ -101,7 +109,7 @@ const Auth: NextPage = () => {
       }
     }
 
-    const loginUser = async () => {
+    const loginUser = async (url?: string) => {
       const res: any = await signIn("credentials", {
         redirect: false,
         email: formData.email,
@@ -109,7 +117,13 @@ const Auth: NextPage = () => {
         callbackUrl: '/dashboard'
       })
       
-      res.error ? setError(res.error) : router.push(res.url)
+      if (res.error) {
+        setError(res.error)  
+      } else if (url) {
+        router.push(url)
+      } else {
+        router.push(res.url)      
+      }
 
     }
 
@@ -117,6 +131,8 @@ const Auth: NextPage = () => {
       e.preventDefault()
       !authType ? register() : loginUser()
     }
+
+  if(loader) return <Loader/>
 
 
   return (
