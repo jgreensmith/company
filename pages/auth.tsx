@@ -45,7 +45,7 @@ const Auth: NextPage = () => {
         [e.target.name]: e.target.value
       })
     }
-
+      //medium strength regex is used on api validation
     let strongPassword = new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})')
     let mediumPassword = new RegExp('((?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{6,}))|((?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])(?=.{8,}))')
 
@@ -62,11 +62,12 @@ const Auth: NextPage = () => {
         setPassStrColor("red")
       }
     }
-
+    //validate password strength onChange event
     useEffect(() => {
       passwordStrengthHandler(formData.password)
     }, [formData.password])
     
+    //create stripe accounton succesfull register then login user after stripe flow
     const stripeSetUp = async () => {
       await fetch('/api/create-stripe', {
         method: 'POST',
@@ -86,7 +87,7 @@ const Auth: NextPage = () => {
       })
       setLoader(true) 
     }
-
+    //register when using credentials then call stripe account set up
     const register = async () => {
       if(confirmPassword === formData.password) {
         const name = `${firstName} ${lastName}`
@@ -108,7 +109,7 @@ const Auth: NextPage = () => {
         setConfirmPasswordError(true)
       }
     }
-
+    //login has optional prop, url from account link after register or login normally
     const loginUser = async (url?: string) => {
       const res: any = await signIn("credentials", {
         redirect: false,
