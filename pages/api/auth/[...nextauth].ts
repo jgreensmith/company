@@ -51,9 +51,11 @@ export default NextAuth({
             }
         })
     ],
+    
     pages: {
         signIn: "/auth",
-        error: "/auth"
+        error: "/auth",
+        newUser: "/link"
     },
     secret: process.env.JWT_SECRET,
     debug: process.env.NODE_ENV === "development",

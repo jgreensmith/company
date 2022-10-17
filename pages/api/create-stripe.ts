@@ -10,7 +10,7 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
             const {email} = req.body
             const account = await stripe.accounts.create({
                 type: 'standard',
-                email: email
+            email: email
             })
             const accountLink = await stripe.accountLinks.create({
                 account: account.id,

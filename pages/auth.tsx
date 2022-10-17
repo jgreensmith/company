@@ -1,6 +1,6 @@
 import { NextPage } from 'next'
 import React, { ChangeEvent, useEffect, useState } from 'react'
-import { useSession, signIn, getProviders } from "next-auth/react";
+import { useSession, signIn, getProviders, signOut } from "next-auth/react";
 
 import { Box, Button, Container, Typography, Divider, TextField, IconButton, InputAdornment, FilledInput, InputLabel, FormControl, Tooltip, Fade, Paper } from '@mui/material';
 import { CenteredDiv, FlexEnd, InputContainer } from '../utils/styles'
@@ -16,7 +16,7 @@ interface IFormData {
 
 
 const Auth: NextPage = () => {
-    const [authType, setAuthType] = useState(true)
+    const [authType, setAuthType] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
     const [confirmPassword, setConfirmPassword] = useState("")
     const [firstName, setFirstName] = useState("")
@@ -27,13 +27,11 @@ const Auth: NextPage = () => {
     const [passStrColor, setPassStrColor] = useState("red")
     const router = useRouter()
     const [loader, setLoader] = useState(false)
-
     
     const [formData, setFormData] = useState<IFormData>({
       email: "",
       password: ""
     })
-
 
     const handleShowPassword = () => {
       setShowPassword(!showPassword);
@@ -83,9 +81,9 @@ const Auth: NextPage = () => {
           console.log(data.error) 
         } else {
           loginUser(data.url)
-        }  
+
+        } 
       })
-      setLoader(true) 
     }
     //register when using credentials then call stripe account set up
     const register = async () => {
@@ -104,6 +102,7 @@ const Auth: NextPage = () => {
         .then((data) => {
           data.error ? setError(data.error) : stripeSetUp()
         });
+        setLoader(true) 
         
       } else {
         setConfirmPasswordError(true)
