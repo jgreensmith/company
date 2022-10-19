@@ -2,12 +2,16 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "../../lib/dbConnect";
 import User from "../../model/User";
 import bcrypt from "bcrypt"; 
+import Stripe from "stripe"
 import mongoose, { FilterQuery, HydratedDocument } from "mongoose";
 
 interface ResponseData {
     error?: string;
     msg?: string;
   }
+// @ts-ignore
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
 
 
 const validateEmail = (email: string): boolean => {
@@ -69,11 +73,17 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
      // hash password auto gen salt
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    const customer = await stripe.customers.create({
+      email: email
+    })
+    const customerId = customer.id
+
     // create new User on MongoDB
     const newUser = new User({
         name,
         email,
         hashedPassword,
+        customerId
     });
         
     newUser

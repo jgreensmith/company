@@ -5,16 +5,18 @@ import dbConnect from "../../../lib/dbConnect";
 import User from "../../../model/User";
 import bcrypt from "bcrypt"; 
 import clientPromise from "../../../lib/mongodb";
+import Stripe from "stripe"
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 
-
+// @ts-ignore
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 
 export default NextAuth({
     providers: [ 
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         }),
         CredentialsProvider({
             id: "credentials",
@@ -51,6 +53,22 @@ export default NextAuth({
             }
         })
     ],
+    callbacks: {
+        session: async ({ session, token }) => {
+          if (session?.user) {
+            // @ts-ignore
+
+            session.user.id = token.uid;
+          }
+          return session;
+        },
+        jwt: async ({ user, token }) => {
+          if (user) {
+            token.uid = user.id;
+          }
+          return token;
+        },
+      },
     
     pages: {
         signIn: "/auth",

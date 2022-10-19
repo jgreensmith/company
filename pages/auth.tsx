@@ -33,6 +33,7 @@ const Auth: NextPage = () => {
       password: ""
     })
 
+
     const handleShowPassword = () => {
       setShowPassword(!showPassword);
     }

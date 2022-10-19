@@ -8,9 +8,21 @@ const Dashboard = () => {
   if(status === "loading") return <div>Loading...</div>
   //if(status === "unauthenticated") return <div><span>Must be signed in</span> <button onClick={() => signIn()}>sign in</button></div>
 
+  const customerPortal = async () => {
+    await fetch('/api/customer-portal', {
+      method: 'POST',
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })
+  }
 
   return (
     <Layout>welcome {session?.user.name} to your account settings
+    <button onClick={customerPortal}> 
+      account settings 
+    </button>
 
     </Layout>
   )

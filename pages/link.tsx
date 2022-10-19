@@ -11,6 +11,21 @@ const Link = () => {
     const stripeSetUp = async () => {
 
       if(status === "authenticated") {
+        
+        await fetch('/api/google-customer', {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // @ts-ignore
+          body: JSON.stringify({email: session.user.email, id: session.user.id})
+          })
+          .then((res) => res.json())
+          .then((data) => {
+
+            console.log(data)
+          }) 
+
         await fetch('/api/create-stripe', {
           method: 'POST',
           headers: {
@@ -20,13 +35,14 @@ const Link = () => {
         })
         .then((res) => res.json())
         .then((data) => {
+
           if (data.error) {
             console.log(data.error) 
           } else {
             router.push(data.url)
-  
           } 
-        })      
+        })  
+           
       } 
     }
 
