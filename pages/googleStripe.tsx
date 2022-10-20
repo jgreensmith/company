@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 import Loader from '../components/svg/Loader'
 
 
-const Link = () => {
+const GoogleStripe = () => {
 
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -57,4 +57,4 @@ const Link = () => {
 
 
 
-export default Link  
+export default GoogleStripe  

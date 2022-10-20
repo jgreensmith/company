@@ -137,7 +137,7 @@ const Auth: NextPage = () => {
 
 
   return (
-    <Box className='auth-background' sx={{backgroundImage: "url('/blurry-gradient-haikei.svg')"}}>
+    <Box className='background' sx={{backgroundImage: "url('/blurry-gradient-haikei.svg')"}}>
         <Box className='auth' sx={{width: {xs: '80%', sm: '420px'}}}>
             <CenteredDiv>
                 <Typography color='black' variant='h5'>{authType ? "Log In" : "Create an account"}</Typography>

@@ -11,9 +11,16 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
     if (req.method === 'POST') {
         try {
             const {email, id} = req.body
+            //create customer
             const customer = await stripe.customers.create({
                 email: email
             })
+            //create customer subscription to GreensmithMerchants
+            // const subsription = await stripe.subscriptions.create({
+            //     customer: customer.id,
+            //     items
+            // })
+            //save customer ID in database
             await dbConnect()
 
             // @ts-ignore

@@ -7,6 +7,9 @@ export const CenteredDiv = styled('div')({
     alignItems: 'center',
     flexDirection: 'column'
   });
+  export const BrandSpan = styled('span')(({theme}) => ({
+    color: theme.palette.primary.main
+  }))
 
   export const InputContainer = styled('div')({
     paddingRight: '10px',
