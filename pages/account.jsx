@@ -1,31 +1,41 @@
 import { signIn, useSession } from 'next-auth/react'
-import React from 'react'
+import { useRouter } from 'next/router'
+import React, { useEffect } from 'react'
+ 
 import Layout from '../components/common/Layout'
+import Loader from '../components/svg/Loader'
 
 const Dashboard = () => {
   const { data: session, status } = useSession({required: true})
 
-  if(status === "loading") return <div>Loading...</div>
-  //if(status === "unauthenticated") return <div><span>Must be signed in</span> <button onClick={() => signIn()}>sign in</button></div>
-
+  const router = useRouter()
+  
   const customerPortal = async () => {
-    await fetch('/api/customer-portal', {
-      method: 'POST',
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
+    if(status === "authenticated") {
+      await fetch('/api/customer-portal', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({id: session.user.id})
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        if(data.error) {
+          console.log(data.error)
+        } else {
+          router.push(data.url)
+        }
+      })
+    }
   }
 
-  return (
-    <Layout>welcome {session?.user.name} to your account settings
-    <button onClick={customerPortal}> 
-      account settings 
-    </button>
+  useEffect(() => {
+    customerPortal()
+  }, [session])
 
-    </Layout>
-  )
+  return <Loader />
+  
 }
 
 export default Dashboard
