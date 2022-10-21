@@ -101,7 +101,7 @@ const Navbar = (props) => {
     
 
     const container = window !== undefined ? () => window().document.body : undefined;
-    console.log(session)
+    //console.log(session)
 
     return (
         <React.Fragment>

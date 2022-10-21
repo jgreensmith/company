@@ -1,5 +1,8 @@
 import { SessionProvider } from "next-auth/react"
+import { Toaster } from 'react-hot-toast';
+
 import '../styles/globals.css'
+import { PriceContext } from "../utils/context/PriceContext"
 
 export default function App({
   Component,
@@ -7,7 +10,10 @@ export default function App({
 }) {
   return (
     <SessionProvider session={session}>
-      <Component {...pageProps} />
+      <PriceContext>
+        <Toaster />
+        <Component {...pageProps} />
+      </PriceContext>
     </SessionProvider>
   )
 }
