@@ -107,7 +107,7 @@ const Navbar = (props) => {
         <React.Fragment>
             <CssBaseline />
             <HideOnScroll {...props}>
-                <AppBar sx={{ bgcolor: 'primary.main' }}>
+                <AppBar sx={{ bgcolor: 'inherit' }}>
                     <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <IconButton
                             aria-label="open drawer"
