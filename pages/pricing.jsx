@@ -15,6 +15,7 @@ const Pricing = ({fixed, free, freePrice, fixedPrice}) => {
     
     const handleClick = (id, name) => {
         setSelectedPrice({mainPrice: id})
+        localStorage.setItem('price', JSON.stringify({mainPrice: id}))
         toast.success(`${name} Option Selected!`)
         router.push('/add-ons')
     }

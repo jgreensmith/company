@@ -57,6 +57,7 @@ const Navbar = (props) => {
 
     //console.log(totalQuantities);
 
+    
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };

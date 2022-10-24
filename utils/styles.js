@@ -22,3 +22,7 @@ export const CenteredDiv = styled('div')({
     paddingRight: 2,
     width: '100%'
   });
+  export const FlexStart = styled('div')({
+    display: 'flex', 
+    justifyContent: 'start'
+  });

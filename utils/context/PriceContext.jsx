@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState} from "react";
+import React, { createContext, useContext, useEffect, useState} from "react";
 
 const Context = createContext();
 
@@ -6,6 +6,13 @@ const Context = createContext();
 export const PriceContext = ({ children }) => {
 
     const [selectedPrice, setSelectedPrice] = useState(null)
+
+    useEffect(() => {
+      if(localStorage.getItem('price')) {
+        setSelectedPrice(JSON.parse(localStorage.getItem('price')))
+      }
+    }, [])
+    
 
     const priceFormatter = (unit) => {
       const num = unit/100
