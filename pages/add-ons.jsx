@@ -14,15 +14,11 @@ const AddOns = ({filteredProducts, prices}) => {
 
     const addOnsCheck = () => {
         if(localStorage.getItem('price')) {
-            let obj = JSON.parse(localStorage.getItem('price'))
-            delete obj['mainPrice']
-            let arr = []
-            Object.keys(obj).map((key, i) => {
-                return arr.push(obj[key])
-            })
+            const arr = JSON.parse(localStorage.getItem('price'))
+            
             const objArr = filteredProducts.filter(obj => {
                 return arr.some((id) => {
-                    return obj.id === id
+                    return obj.default_price === id
                 })       
             })
             setAddOns(objArr)
@@ -32,33 +28,19 @@ const AddOns = ({filteredProducts, prices}) => {
     useEffect(() => {
       addOnsCheck()
     }, [])
-    
-
-    const reduceName = (name) => {
-        const reducedName = name.replaceAll(" ", "_").toLowerCase()
-        return reducedName
-    }
 
     const handleClick = (id, name) => {
-        setSelectedPrice({
-            ...selectedPrice,
-            [reduceName(name)]: id
-        })
-        localStorage.setItem('price', JSON.stringify({
-            ...selectedPrice,
-            [reduceName(name)]: id
-        }))
+        const newArr = [...selectedPrice, id]
+        setSelectedPrice(newArr)
+        localStorage.setItem('price', JSON.stringify(newArr))
         toast.success(`${name} Selected!`)
         addOnsCheck()
     }
-    const handleRemove = (name) => {
-        if(selectedPrice[reduceName(name)]){
-            delete selectedPrice[reduceName(name)]
-            localStorage.setItem('price', JSON.stringify({
-                ...selectedPrice,
-            }))
-            toast.error(`${name} Removed`)
-        } 
+    const handleRemove = (id, name) => {
+        const newArr = selectedPrice.filter(x => x !== id)
+        setSelectedPrice(newArr)
+        localStorage.setItem('price', JSON.stringify(newArr))
+        toast.error(`${name} Removed`)
         addOnsCheck()
     }
     console.log(addOns)
@@ -74,12 +56,10 @@ const AddOns = ({filteredProducts, prices}) => {
                                     <Typography>{product.name}</Typography>
                                 </CardContent>
                                 <CardActions>
-                                    <Button variant='contained' onClick={() => handleClick(product.id, product.name)}>
+                                    <Button variant='contained' onClick={() => handleClick(product.default_price, product.name)}>
                                         Add
                                     </Button>
-                                    <Button variant='contained' onClick={() => handleRemove(product.name)}>
-                                        Remove 
-                                    </Button>
+                                    
                                 </CardActions>
                             </Card>
                         ))
@@ -111,16 +91,16 @@ const AddOns = ({filteredProducts, prices}) => {
             <TableContainer component={Paper} elevation={0} square sx={{ maxHeight: 'calc(100vh - 240px)', overflowY: 'auto' }}>
                 <Table >
                     <TableBody >
-                        {/* {addOns.length >= 1 && addOns.map((cartItem) => (
-                            <TableRow  key={cartItem._id}>
+                        {addOns.length >= 1 && addOns.map((obj) => (
+                            <TableRow  key={obj.id}>
                                 
                                 <TableCell>
                                     <Grid container>
                                         <Grid item xs={6}>
-                                            <Typography variant='subtitle1' gutterBottom>{cartItem.name}</Typography>
+                                            <Typography variant='subtitle1' gutterBottom>{obj.name}</Typography>
                                         </Grid>
                                         <Grid item xs={6}>
-                                            <Typography align='right'>£{cartItem.price}</Typography>
+                                            <Typography align='right'>£{obj.price}</Typography>
                                         </Grid>
                                        
                                         <Grid item xs={6}>
@@ -129,6 +109,7 @@ const AddOns = ({filteredProducts, prices}) => {
                                                     variant="text"
                                                     color="error"
                                                     sx={{padding: 0}}
+                                                    onClick={() => handleRemove(obj.default_price, obj.name)}
                                                 >
                                                     Remove
                                                 </Button>
@@ -137,7 +118,7 @@ const AddOns = ({filteredProducts, prices}) => {
                                     </Grid>
                                 </TableCell>
                             </TableRow>
-                        ))} */}
+                        ))}
                         
                     </TableBody>
                 </Table>
@@ -155,10 +136,11 @@ const AddOns = ({filteredProducts, prices}) => {
                                 <Button
                                 type="button"
                                 fullWidth
+                                href='/auth'
                                 variant="contained"
                                 color="secondary"
                                 >
-                                    Proceed to checkout
+                                    Create Account
                                 </Button>
                         </Grid>
                         

@@ -10,7 +10,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 export default async function handler( req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
         try {
-            const {email, id} = req.body
+            const {email, id, priceList } = req.body
             //create customer
             const customer = await stripe.customers.create({
                 email: email
@@ -18,7 +18,7 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
             //create customer subscription to GreensmithMerchants
             // const subsription = await stripe.subscriptions.create({
             //     customer: customer.id,
-            //     items
+            //     items: 
             // })
             //save customer ID in database
             await dbConnect()

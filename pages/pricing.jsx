@@ -14,13 +14,15 @@ const Pricing = ({fixed, free, freePrice, fixedPrice}) => {
     const router = useRouter()
     
     const handleClick = (id, name) => {
-        setSelectedPrice({mainPrice: id})
-        localStorage.setItem('price', JSON.stringify({mainPrice: id}))
+        setSelectedPrice([id])
+        localStorage.setItem('price', JSON.stringify([id]))
         toast.success(`${name} Option Selected!`)
         router.push('/add-ons')
     }
     
-    //console.log(selectedPrice)
+    //console.log(fixed)
+    //console.log(fixedPrice)
+
   return (
     <Layout title="Pricing" seo="Pricing Options">
         <Box className='background' sx={{backgroundImage: "url('/blurry-gradient-haikei.svg')"}}>
@@ -39,7 +41,7 @@ const Pricing = ({fixed, free, freePrice, fixedPrice}) => {
                                 <Typography variant='h1'> {priceFormatter(fixedPrice.unit_amount)} <Typography variant='body1' component="span">pcm</Typography></Typography>
                             </CardContent>
                             <CardActions>
-                                <Button variant='contained' onClick={() => handleClick(fixed.id, fixed.name)}>
+                                <Button variant='contained' onClick={() => handleClick(fixedPrice.id, fixed.name)}>
                                     Get Started
                                 </Button>
                             </CardActions>
@@ -52,7 +54,7 @@ const Pricing = ({fixed, free, freePrice, fixedPrice}) => {
                                 <Typography variant='h1'> %6 <Typography variant='body1' component="span">commission fee </Typography></Typography>
                             </CardContent>
                             <CardActions>
-                                <Button variant='contained' onClick={() => handleClick(free.id, free.name)}>
+                                <Button variant='contained' onClick={() => handleClick(freePrice.id, free.name)}>
                                     Get Started
                                 </Button>
                             </CardActions>

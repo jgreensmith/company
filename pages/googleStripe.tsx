@@ -1,12 +1,15 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import React, { useEffect } from 'react'
+
+import { usePriceContext } from '../utils/context/PriceContext'
 import Loader from '../components/svg/Loader'
 
 
 const GoogleStripe = () => {
 
   const { data: session, status } = useSession()
+  const { selectedPrice } = usePriceContext()
   const router = useRouter()
     const stripeSetUp = async () => {
 
@@ -18,7 +21,7 @@ const GoogleStripe = () => {
             "Content-Type": "application/json",
           },
           // @ts-ignore
-          body: JSON.stringify({email: session.user.email, id: session.user.id})
+          body: JSON.stringify({email: session.user.email, id: session.user.id, priceList: selectedPrice})
           })
           .then((res) => res.json())
           .then((data) => {
