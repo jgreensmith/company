@@ -8,6 +8,7 @@ import { FcGoogle } from 'react-icons/fc'
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
 import Loader from '../components/svg/Loader';
 import { useRouter } from 'next/router';
+import { usePriceContext } from '../utils/context/PriceContext';
 
 interface IFormData {
   email: string
@@ -16,7 +17,7 @@ interface IFormData {
 
 
 const Auth: NextPage = () => {
-    const [authType, setAuthType] = useState(false)
+    const [authType, setAuthType] = useState(true)
     const [showPassword, setShowPassword] = useState(false)
     const [confirmPassword, setConfirmPassword] = useState("")
     const [firstName, setFirstName] = useState("")
@@ -27,15 +28,34 @@ const Auth: NextPage = () => {
     const [passStrColor, setPassStrColor] = useState("red")
     const router = useRouter()
     const [loader, setLoader] = useState(false)
+
     
     const [formData, setFormData] = useState<IFormData>({
       email: "",
       password: ""
     })
-
-
+    
     const handleShowPassword = () => {
       setShowPassword(!showPassword);
+    }
+
+    useEffect(() => {
+      if(localStorage.getItem('price')) {
+        setAuthType(false)
+      } else {
+        setAuthType(true)
+      }
+    }, [])
+
+    //if user has already been authenticated but not selected pricing options
+    //now they have selected price user must go through stripe flow
+    const handleGoogleSignIn = async () => {
+      if(localStorage.getItem('googleRerouted')) {
+        await signIn('google', { callbackUrl: '/googleStripe' })
+        localStorage.removeItem('googleRerouted')
+      } else {
+        await signIn('google', { callbackUrl: '/dashboard' })
+      }
     }
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -141,21 +161,19 @@ const Auth: NextPage = () => {
         <Box className='auth' sx={{width: {xs: '80%', sm: '420px'}}}>
             <CenteredDiv>
                 <Typography color='black' variant='h5'>{authType ? "Log In" : "Create an account"}</Typography>
+                {authType && 
                 <Typography color='black' variant='body1'>
-
-                    {authType ? 
-                        "Not registered yet?"
-                    : 
-                        "Already have an account?"
-                    }
-                    <Button variant='text' sx={{textTransform: 'capitalize'}} onClick={() => setAuthType(!authType)}>
-                    {!authType ? "Log In" : "Create Account"}
+                        Not registered yet?
+                    
+                    <Button variant='text' sx={{textTransform: 'capitalize'}} href='/pricing'>
+                  Create Account
                     </Button>
                 </Typography>
+                }
             </CenteredDiv>
             <Divider />
             <CenteredDiv sx={{width: '100%', mt: 2, mb: 1, p: '0 10px'}}>
-                <Button fullWidth variant='contained' startIcon={<FcGoogle />} sx={{backgroundColor: "#000000e0", p: 1}} onClick={() => signIn('google', { callbackUrl: '/dashboard' })}>
+                <Button fullWidth variant='contained' startIcon={<FcGoogle />} sx={{backgroundColor: "#000000e0", p: 1}} onClick={handleGoogleSignIn}>
                     <Typography variant="body1" align='center' sx={{textTransform: 'capitalize', pl: 2}}>{authType ? "Log In" : "Create account"} With Google</Typography> 
                 </Button>
             </CenteredDiv>

@@ -78,6 +78,14 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
     })
     const customerId = customer.id
 
+    //create subscription
+    const prices = JSON.parse(localStorage.getItem('price'))
+
+    await stripe.subscriptions.create({
+      customer: customer.id,
+      items: prices
+    })
+
     // create new User on MongoDB
     const newUser = new User({
         name,

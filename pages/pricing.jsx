@@ -16,6 +16,7 @@ const Pricing = ({fixed, free, freePrice, fixedPrice}) => {
     const handleClick = (id, name) => {
         setSelectedPrice([id])
         localStorage.setItem('price', JSON.stringify([id]))
+        localStorage.setItem('googleRerouted', JSON.stringify(true))
         toast.success(`${name} Option Selected!`)
         router.push('/add-ons')
     }
