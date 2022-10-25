@@ -1,10 +1,36 @@
 import { signIn, useSession } from 'next-auth/react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Layout from '../components/common/Layout'
 import Loader from '../components/svg/Loader'
+import dbConnect from "../lib/dbConnect";
+import User from "../model/User";
 
-const Dashboard = () => {
+const Dashboard = (users) => {
   const { data: session, status } = useSession({required: true})
+
+  // const customerIdCheck = async () => {
+  //   await fetch('/api/customer-check', {
+  //     method: 'POST',
+  //     headers: {
+  //       "Content-Type": "application/json",
+
+  //     },
+  //     body: JSON.stringify({id: session.user.id})
+  //   })
+  //   .then((res) => res.json())
+  //   .then((data) => {
+      
+  //       console.log(data)
+      
+  //   })
+  // }
+  // useEffect(() => {
+  //   if(status === "authenticated") {
+  //     customerIdCheck()
+  //   }
+  // }, [session])
+  
+  console.log(users)
 
   if(status === "loading") return <Loader />
   //if(status === "unauthenticated") return <div><span>Must be signed in</span> <button onClick={() => signIn()}>sign in</button></div>
@@ -18,5 +44,16 @@ const Dashboard = () => {
 
 export default Dashboard
 
-
+export async function getServerSideProps() {
+  try {
+    await dbConnect()
+    // @ts-ignore
+    const user = await User.find({})
+    return {
+      props: {users: JSON.parse(JSON.stringify(user))}
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
   

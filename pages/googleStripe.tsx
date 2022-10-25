@@ -15,20 +15,39 @@ const GoogleStripe = () => {
 
   //push to pricing if new user logs in without selecting pricing options
 
-  const selectPrice = async () => {
-    if(status === "authenticated") {
+  // const selectPrice = async () => {
+  //   if(status === "authenticated") {
+  //     await fetch('/api/google-reroute', {
+  //       method: 'DELETE',
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       // @ts-ignore
+  //       body: JSON.stringify({id: session.user.id})
+  //     })
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       if(data.error) {
+  //         console.log(data.error)
+  //       } else {
+  //         handleSignOut()
+  //       }
+  //     })
 
-      const res: any = await signOut({
-        redirect: false,
-        callbackUrl: '/pricing'
-      })
-      if(res.error) {
-        console.log(res.error)
-      } else {
-  
-        router.push(res.url)
-        toast.error("Please select a pricing option")
-      }
+      
+  //   }
+  // }
+  const selectPrice = async () => {
+    const res: any = await signOut({
+      redirect: false,
+      callbackUrl: '/pricing'
+    })
+    if(res.error) {
+      console.log(res.error)
+    } else {
+
+      router.push(res.url)
+      toast.error("Please select a pricing option")
     }
   }
     

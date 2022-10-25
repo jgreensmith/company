@@ -11,16 +11,18 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
     if (req.method === 'POST') {
         try {
             const {email, id, priceList } = req.body
-            const prices = JSON.parse(localStorage.getItem('price'))
+            //const prices = JSON.parse(localStorage.getItem('price'))
             //create customer
             const customer = await stripe.customers.create({
                 email: email
             })
             //create customer subscription to GreensmithMerchants
-            await stripe.subscriptions.create({
-                customer: customer.id,
-                items: prices
-            })
+            // await stripe.subscriptions.create({
+            //     customer: customer.id,
+            //     items: priceList.map((priceId) => {
+            //         return {price: priceId}
+            //     })
+            // })
             //save customer ID in database
             await dbConnect()
 
