@@ -17,19 +17,21 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
                 email: email
             })
             //create customer subscription to GreensmithMerchants
-            // await stripe.subscriptions.create({
-            //     customer: customer.id,
-            //     items: priceList.map((priceId) => {
-            //         return {price: priceId}
-            //     })
-            // })
+            const subscription = await stripe.subscriptions.create({
+                customer: customer.id,
+                items: priceList.map((priceId) => {
+                    return {price: priceId}
+                }),
+                payment_behavior: "default_incomplete",
+                expand: ['latest_invoice.payment_intent'],
+            })
             //save customer ID in database
             await dbConnect()
 
             // @ts-ignore
             await User.findByIdAndUpdate({_id: id}, {customerId: customer.id})
             
-            res.status(200).json({message: "created customer"})
+            res.status(200).json(subscription)
         } catch (error) {
             res.status(error.statusCode || 500).json(error.message);
         }

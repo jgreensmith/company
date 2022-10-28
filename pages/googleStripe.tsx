@@ -50,8 +50,25 @@ const GoogleStripe = () => {
       toast.error("Please select a pricing option")
     }
   }
-    
-  
+
+  const createStripe = async () => {
+    await fetch('/api/create-stripe', {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({email: session.user.email})
+    })
+    .then((res) => res.json())
+    .then((data) => {
+
+      if (data.error) {
+        console.log(data.error) 
+      } else {
+        router.push(data.url)
+      } 
+    })  
+  }
 
   const stripeSetUp = async () => {
 
@@ -67,26 +84,14 @@ const GoogleStripe = () => {
         })
         .then((res) => res.json())
         .then((data) => {
-
-          console.log(data)
+          if(data.error) {
+            console.log(data.error)
+          } else {
+            createStripe()
+          }
         }) 
 
-      await fetch('/api/create-stripe', {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({email: session.user.email})
-      })
-      .then((res) => res.json())
-      .then((data) => {
-
-        if (data.error) {
-          console.log(data.error) 
-        } else {
-          router.push(data.url)
-        } 
-      })  
+     
           
     } 
   }
