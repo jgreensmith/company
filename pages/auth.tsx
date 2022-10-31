@@ -28,6 +28,7 @@ const Auth: NextPage = () => {
     const [passStrColor, setPassStrColor] = useState("red")
     const router = useRouter()
     const [loader, setLoader] = useState(false)
+    const { selectedPrice } = usePriceContext()
 
     
     const [formData, setFormData] = useState<IFormData>({
@@ -87,13 +88,13 @@ const Auth: NextPage = () => {
     }, [formData.password])
     
     //create stripe accounton succesfull register then login user after stripe flow
-    const stripeSetUp = async () => {
-      await fetch('/api/create-stripe', {
+    const checkout = async () => {
+      await fetch('/api/checkout', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({email: formData.email})
+        body: JSON.stringify({ priceList: selectedPrice})
 
       })
       .then((res) => res.json())
@@ -121,7 +122,7 @@ const Auth: NextPage = () => {
         })
         .then((res) => res.json())
         .then((data) => {
-          data.error ? setError(data.error) : stripeSetUp()
+          data.error ? setError(data.error) : checkout()
         });
         setLoader(true) 
         
