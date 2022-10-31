@@ -15,28 +15,7 @@ const GoogleStripe = () => {
 
   //push to pricing if new user logs in without selecting pricing options
 
-  // const selectPrice = async () => {
-  //   if(status === "authenticated") {
-  //     await fetch('/api/google-reroute', {
-  //       method: 'DELETE',
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       // @ts-ignore
-  //       body: JSON.stringify({id: session.user.id})
-  //     })
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       if(data.error) {
-  //         console.log(data.error)
-  //       } else {
-  //         handleSignOut()
-  //       }
-  //     })
-
-      
-  //   }
-  // }
+  
   const selectPrice = async () => {
     const res: any = await signOut({
       redirect: false,
@@ -51,45 +30,27 @@ const GoogleStripe = () => {
     }
   }
 
-  const createStripe = async () => {
-    await fetch('/api/create-stripe', {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({email: session.user.email})
-    })
-    .then((res) => res.json())
-    .then((data) => {
-
-      if (data.error) {
-        console.log(data.error) 
-      } else {
-        router.push(data.url)
-      } 
-    })  
-  }
-
-  const stripeSetUp = async () => {
+  const checkout = async () => {
 
     if(status === "authenticated") {
       
-      await fetch('/api/google-customer', {
+      await fetch('/api/checkout', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
         },
         // @ts-ignore
-        body: JSON.stringify({email: session.user.email, id: session.user.id, priceList: selectedPrice})
+        body: JSON.stringify({ priceList: selectedPrice})
         })
         .then((res) => res.json())
         .then((data) => {
           if(data.error) {
             console.log(data.error)
           } else {
-            createStripe()
+            router.push(data.url)
           }
-        }) 
+        })
+
 
      
           
@@ -98,7 +59,7 @@ const GoogleStripe = () => {
 
   useEffect (() => {
     if(localStorage.getItem('price')) {
-      stripeSetUp()
+      checkout()
     } else {
       selectPrice()
     }
