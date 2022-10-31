@@ -102,7 +102,7 @@ const Auth: NextPage = () => {
         if (data.error) {
           console.log(data.error) 
         } else {
-          loginUser(data.url)
+          loginUser()
 
         } 
       })
@@ -131,7 +131,7 @@ const Auth: NextPage = () => {
       }
     }
     //login has optional prop, url from account link after register or login normally
-    const loginUser = async (url?: string) => {
+    const loginUser = async () => {
       const res: any = await signIn("credentials", {
         redirect: false,
         email: formData.email,
@@ -141,8 +141,6 @@ const Auth: NextPage = () => {
       
       if (res.error) {
         setError(res.error)  
-      } else if (url) {
-        router.push(url)
       } else {
         router.push(res.url)      
       }
