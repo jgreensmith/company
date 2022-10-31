@@ -98,14 +98,14 @@ const Auth: NextPage = () => {
 
       })
       .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          console.log(data.error) 
-        } else {
-          loginUser()
-
-        } 
-      })
+        .then((data) => {
+          if(data.error) {
+            console.log(data.error)
+          } else {
+            loginUser(data.url)
+          }
+        })
+      
     }
     //register when using credentials then call stripe account set up
     const register = async () => {
@@ -122,7 +122,13 @@ const Auth: NextPage = () => {
         })
         .then((res) => res.json())
         .then((data) => {
-          data.error ? setError(data.error) : checkout()
+          if(data.error) {
+
+            setError(data.error) 
+          } else {
+            //loginUser()
+            checkout()
+          }
         });
         setLoader(true) 
         
@@ -130,8 +136,8 @@ const Auth: NextPage = () => {
         setConfirmPasswordError(true)
       }
     }
-    //login has optional prop, url from account link after register or login normally
-    const loginUser = async () => {
+    //login has optional prop, url from checkout after register or login normally
+    const loginUser = async (url?: string) => {
       const res: any = await signIn("credentials", {
         redirect: false,
         email: formData.email,
@@ -141,6 +147,8 @@ const Auth: NextPage = () => {
       
       if (res.error) {
         setError(res.error)  
+      } else if (url) {
+        router.push(url)      
       } else {
         router.push(res.url)      
       }
