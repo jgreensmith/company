@@ -13,22 +13,23 @@ const Success = () => {
     const router = useRouter()
     const sessionId = router.query.session_id;
     const [stripeSession, setStripeSession] = useState(null)
+    //const [loader, setLoader] = useState(false)
 
 
 
     //add customer id to mongodb 
-    const addCustomer = async (customer: object) => {
-      if (status === "authenticated") {
-        await fetch('/api/add-customer', {
-          method: 'POST',
-          headers: {
-            "Content-Type": "application/json",
-          },
-          // @ts-ignore
-          body: JSON.stringify({ id: session.user.id, customerId: customer.id })
-        })
-      }
-    }
+    // const addCustomer = async (customer: object) => {
+    //   if (status === "authenticated") {
+    //     await fetch('/api/add-customer', {
+    //       method: 'POST',
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       // @ts-ignore
+    //       body: JSON.stringify({ id: session.user.id, customerId: customer.id })
+    //     })
+    //   }
+    // }
 
     const getData = async (id: any) => {
         if(id) {
@@ -40,8 +41,8 @@ const Success = () => {
               if(data.error) {
                 console.log(data.error)
               } else {
-                addCustomer(data.customer)
-                setStripeSession(data.session)
+                createStripe(data.customer)
+                //setStripeSession(data.session)
               }
               console.log(data)
             })
@@ -49,8 +50,17 @@ const Success = () => {
     }
 
 
-  const createStripe = async () => {
+  const createStripe = async (customer: object) => {
     if (status === "authenticated") {
+      await fetch('/api/add-customer', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        // @ts-ignore
+        body: JSON.stringify({ id: session.user.id, customerId: customer.id })
+      })
+
       await fetch('/api/create-stripe', {
         method: 'POST',
         headers: {
@@ -66,7 +76,7 @@ const Success = () => {
         } else {
           router.push(data.url)
         } 
-      })  
+      }) 
     }
   }
 
@@ -75,17 +85,18 @@ const Success = () => {
     localStorage.removeItem("price")
   }, [sessionId, session])
   
-  if(status === "loading") return <Loader />
-
+  //if(status === "loading") return <Loader />
+  
   console.log(stripeSession)
-  return (
-    <Layout title="success" seo="success">
+  return <Loader message="Your secure account is under construction" />
+  // return (
+  //   <Layout title="success" seo="success">
     
 
-    <div>Success, thankyou {session?.user.name} for choosing to do buisness with greensmith merchants</div>
-    <button onClick={createStripe}>Build your merchant account here!</button>
-    </Layout>
-  )
+  //   <div>Success, thankyou {session?.user.name} for choosing to do buisness with greensmith merchants</div>
+  //   <button onClick={createStripe}>Build your merchant account here!</button>
+  //   </Layout>
+  // )
 }
 
 export default Success

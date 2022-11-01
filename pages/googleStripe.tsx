@@ -66,7 +66,7 @@ const GoogleStripe = () => {
   }, [session])
 
 
-  return <Loader />
+  return <Loader message="authentication successfull" />
   
 }
 

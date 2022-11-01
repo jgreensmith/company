@@ -160,7 +160,7 @@ const Auth: NextPage = () => {
       !authType ? register() : loginUser()
     }
 
-  if(loader) return <Loader/>
+  if(loader) return <Loader message="authentication successfull"/>
 
 
   return (
