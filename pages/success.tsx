@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 
 import Layout from '../components/common/Layout'
+import Loader from '../components/svg/Loader'
 
 
 const Success = () => {
@@ -12,16 +13,19 @@ const Success = () => {
     const [stripeSession, setStripeSession] = useState(null)
 
 
+
     //add customer id to mongodb 
     const addCustomer = async (customer: object) => {
-      await fetch('/api/add-customer', {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json",
-        },
-        // @ts-ignore
-        body: JSON.stringify({ id: session.user.id, customerId: customer.id })
-      })
+      if (status === "authenticated") {
+        await fetch('/api/add-customer', {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // @ts-ignore
+          body: JSON.stringify({ id: session.user.id, customerId: customer.id })
+        })
+      }
     }
 
     const getData = async (id: any) => {
@@ -43,29 +47,32 @@ const Success = () => {
     }
 
 
-    const createStripe = async () => {
-    await fetch('/api/create-stripe', {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({email: session.user.email})
-    })
-    .then((res) => res.json())
-    .then((data) => {
+  const createStripe = async () => {
+    if (status === "authenticated") {
+      await fetch('/api/create-stripe', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({email: session.user.email})
+      })
+      .then((res) => res.json())
+      .then((data) => {
 
-      if (data.error) {
-        console.log(data.error) 
-      } else {
-        router.push(data.url)
-      } 
-    })  
+        if (data.error) {
+          console.log(data.error) 
+        } else {
+          router.push(data.url)
+        } 
+      })  
+    }
   }
 
   useEffect(() => {
     getData(sessionId)
-  }, [sessionId])
+  }, [sessionId, session])
   
+  if(status === "loading") return <Loader />
 
   console.log(stripeSession)
   return (
