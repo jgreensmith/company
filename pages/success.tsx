@@ -7,7 +7,9 @@ import Loader from '../components/svg/Loader'
 
 
 const Success = () => {
-    const { data: session, status } = useSession()
+    const { data: session, status } = useSession({
+      required: true
+    })
     const router = useRouter()
     const sessionId = router.query.session_id;
     const [stripeSession, setStripeSession] = useState(null)
@@ -70,6 +72,7 @@ const Success = () => {
 
   useEffect(() => {
     getData(sessionId)
+    localStorage.removeItem("price")
   }, [sessionId, session])
   
   if(status === "loading") return <Loader />
@@ -79,8 +82,8 @@ const Success = () => {
     <Layout title="success" seo="success">
     
 
-    <div>Success</div>
-    <button onClick={createStripe}>Build your merchant account</button>
+    <div>Success, thankyou {session?.user.name} for choosing to do buisness with greensmith merchants</div>
+    <button onClick={createStripe}>Build your merchant account here!</button>
     </Layout>
   )
 }
