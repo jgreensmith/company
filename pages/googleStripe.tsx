@@ -9,7 +9,7 @@ import Loader from '../components/svg/Loader'
 
 const GoogleStripe = () => {
 
-  const { data: session, status } = useSession()
+  //const { data: session, status } = useSession()
   const { selectedPrice } = usePriceContext()
   const router = useRouter()
 
@@ -32,7 +32,7 @@ const GoogleStripe = () => {
 
   const checkout = async () => {
 
-    if(status === "authenticated") {
+    if(selectedPrice.length > 1) {
       
       await fetch('/api/checkout', {
         method: 'POST',
@@ -63,7 +63,7 @@ const GoogleStripe = () => {
     } else {
       selectPrice()
     }
-  }, [session])
+  }, [])
 
 
   return <Loader message="authentication successfull" />

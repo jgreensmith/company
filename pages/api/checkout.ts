@@ -4,27 +4,57 @@ import dbConnect from "../../lib/dbConnect";
 import User from "../../model/User";
 
 
+interface ResponseData {
+    error?: string;
+}
+
 // @ts-ignore
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+let session: object
 
-export default async function handler( req: NextApiRequest, res: NextApiResponse) {
+export default async function handler( req: NextApiRequest, res: NextApiResponse<ResponseData>) {
     if (req.method === 'POST') {
         try {
             const {priceList} = req.body
+            let prices = priceList
+            const priceOption = priceList[0]
             
-            const session = await stripe.checkout.sessions.create({
-                mode: 'subscription',
-                line_items: priceList.map((priceId: string) => {
+
+            const params = {
+                line_items: prices.map((priceId: string) => {
                     return {price: priceId, quantity: 1}
                 }),
-                success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-              cancel_url: `${req.headers.origin}/cancelled`,
+                cancel_url: `${req.headers.origin}/cancelled`,
+                customer_creation: "always",
+            }
+
+            if  (priceOption === "price_1LvH0PJlND9FCfnv12qQYH1P") {
+                // @ts-ignore
+                session = await stripe.checkout.sessions.create({
+                    ...params,
+                    success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+                    mode: 'subscription'
+                })
+            } else if (priceOption === "free_with_commission") {
+                    
+                // @ts-ignore
+                session = await stripe.checkout.sessions.create({
+                    ...params,
+                    success_url: `${req.headers.origin}/noCustomerSuccess`,
+                    mode: 'payment'
+                })
+                
+                
+                
+            } else {
+                return res.status(400).json("not a valid price id" as ResponseData);
+            }
             
-            })
+           
 
             res.status(200).json(session)
-        } catch (error) {
-            res.status(error.statusCode || 500).json(error.message);
+        } catch (err) {
+            res.status(400).json({ error: "Error on '/api/checkout': " + err });
         }
         
     }

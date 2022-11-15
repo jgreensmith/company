@@ -55,7 +55,7 @@ const Pricing = ({fixed, free, freePrice, fixedPrice}) => {
                                 <Typography variant='h1'> %6 <Typography variant='body1' component="span">commission fee </Typography></Typography>
                             </CardContent>
                             <CardActions>
-                                <Button variant='contained' onClick={() => handleClick(freePrice.id, free.name)}>
+                                <Button variant='contained' onClick={() => handleClick("free_with_commission", free.name)}>
                                     Get Started
                                 </Button>
                             </CardActions>

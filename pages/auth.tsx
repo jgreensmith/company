@@ -89,15 +89,17 @@ const Auth: NextPage = () => {
     
     //create stripe accounton succesfull register then login user after stripe flow
     const checkout = async () => {
-      await fetch('/api/checkout', {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ priceList: selectedPrice})
+      if(selectedPrice.length > 1) {
 
-      })
-      .then((res) => res.json())
+        await fetch('/api/checkout', {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ priceList: selectedPrice})
+          
+        })
+        .then((res) => res.json())
         .then((data) => {
           if(data.error) {
             console.log(data.error)
@@ -105,6 +107,10 @@ const Auth: NextPage = () => {
             loginUser(data.url)
           }
         })
+      } else {
+        loginUser('/noCustomerSuccess')
+
+      }
       
     }
     //register when using credentials then call stripe account set up

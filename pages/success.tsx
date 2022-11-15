@@ -12,7 +12,7 @@ const Success = () => {
     })
     const router = useRouter()
     const sessionId = router.query.session_id;
-    const [stripeSession, setStripeSession] = useState(null)
+    //const [stripeSession, setStripeSession] = useState(null)
     //const [loader, setLoader] = useState(false)
 
 
@@ -66,7 +66,8 @@ const Success = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({email: session.user.email})
+        // @ts-ignore
+        body: JSON.stringify({id: session.user.id, email: session.user.email})
       })
       .then((res) => res.json())
       .then((data) => {
@@ -87,7 +88,7 @@ const Success = () => {
   
   //if(status === "loading") return <Loader />
   
-  console.log(stripeSession)
+  //console.log(stripeSession)
   return <Loader message="Your secure account is under construction" />
   // return (
   //   <Layout title="success" seo="success">
