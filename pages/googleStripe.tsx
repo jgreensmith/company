@@ -32,7 +32,7 @@ const GoogleStripe = () => {
 
   const checkout = async () => {
 
-    if(selectedPrice.length > 1) {
+    if(selectedPrice.length > 1 || selectedPrice[0] === "price_1LvH0PJlND9FCfnv12qQYH1P") {
       
       await fetch('/api/checkout', {
         method: 'POST',
@@ -50,11 +50,10 @@ const GoogleStripe = () => {
             router.push(data.url)
           }
         })
-
-
-     
-          
-    } 
+   
+    } else {
+      router.push('/noCustomerSuccess')
+    }
   }
 
   useEffect (() => {

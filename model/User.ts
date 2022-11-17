@@ -19,6 +19,9 @@ const userSchema = new Schema({
   },
   customerId: {
     type: String
+  },
+  connectedAccount: {
+    type: String
   }
   
   

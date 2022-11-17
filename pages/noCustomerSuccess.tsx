@@ -15,25 +15,6 @@ const NoCustomerSuccess = () => {
         required: true
       })
 
-    const addConnectAccount = async (dataObj: DataObj) => {
-      await fetch('/api/add-connect', {
-        method: 'POST',
-            headers: {
-              "Content-Type": "application/json",
-            },
-            // @ts-ignore
-            body: JSON.stringify({id: session.user.id, connectId: dataObj.account.id})
-      })
-      .then((res) => res.json()
-      .then((data) => {
-        if(data.error) {
-          console.log(data.error)
-        } else {
-          router.push(dataObj.accountLink.url)
-        }
-      }))
-    }
-
     const createStripe = async () => {
         if (status === "authenticated") {
 
@@ -43,7 +24,7 @@ const NoCustomerSuccess = () => {
               "Content-Type": "application/json",
             },
             // @ts-ignore
-            body: JSON.stringify({ email: session.user.email})
+            body: JSON.stringify({ id: session.user.id, email: session.user.email})
             })
             .then((res) => res.json())
             .then((data) => {
@@ -51,7 +32,7 @@ const NoCustomerSuccess = () => {
                 if (data.error) {
                 console.log(data.error) 
                 } else {
-                  addConnectAccount(data)
+                  router.push(data.accountLink.url)
                 } 
             }) 
         }
