@@ -22,6 +22,9 @@ const userSchema = new Schema({
   },
   connectedAccount: {
     type: String
+  },
+  orders: {
+    type: Array
   }
   
   
