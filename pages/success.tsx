@@ -12,24 +12,7 @@ const Success = () => {
     })
     const router = useRouter()
     const sessionId = router.query.session_id;
-    //const [stripeSession, setStripeSession] = useState(null)
-    //const [loader, setLoader] = useState(false)
-
-
-
-    //add customer id to mongodb 
-    // const addCustomer = async (customer: object) => {
-    //   if (status === "authenticated") {
-    //     await fetch('/api/add-customer', {
-    //       method: 'POST',
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //       // @ts-ignore
-    //       body: JSON.stringify({ id: session.user.id, customerId: customer.id })
-    //     })
-    //   }
-    // }
+   
 
     const getData = async (id: any) => {
         if(id) {
