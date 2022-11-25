@@ -32,7 +32,7 @@ const NoCustomerSuccess = () => {
                 if (data.error) {
                 console.log(data.error) 
                 } else {
-                  router.push(data.accountLink.url)
+                  router.push(data.url)
                 } 
             }) 
         }

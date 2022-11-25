@@ -16,30 +16,30 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
     if (req.method === 'POST') {
         try {
             const {priceList} = req.body
-            let prices = priceList
+            //let prices = priceList
             const priceOption = priceList[0]
             
-
-            const params = {
-                line_items: prices.map((priceId: string) => {
-                    return {price: priceId, quantity: 1}
-                }),
-                cancel_url: `${req.headers.origin}/cancelled`,
-                customer_creation: "always",
-            }
 
             if  (priceOption === "price_1LvH0PJlND9FCfnv12qQYH1P") {
                 // @ts-ignore
                 session = await stripe.checkout.sessions.create({
-                    ...params,
+                    line_items: priceList.map((priceId: string) => {
+                        return {price: priceId, quantity: 1}
+                    }),
+                    cancel_url: `${req.headers.origin}/cancelled`,
                     success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-                    mode: 'subscription'
+                    mode: 'subscription',
                 })
             } else if (priceOption === "free_with_commission") {
+
+                priceList.shift()
                     
                 // @ts-ignore
                 session = await stripe.checkout.sessions.create({
-                    ...params,
+                    line_items: priceList.map((priceId: string) => {
+                        return {price: priceId, quantity: 1}
+                    }),
+                    cancel_url: `${req.headers.origin}/cancelled`,
                     success_url: `${req.headers.origin}/noCustomerSuccess`,
                     mode: 'payment'
                 })

@@ -57,7 +57,7 @@ const GoogleStripe = () => {
   }
 
   useEffect (() => {
-    if(localStorage.getItem('price')) {
+    if(selectedPrice) {
       checkout()
     } else {
       selectPrice()

@@ -28,7 +28,7 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
 
             
             
-            res.status(200).json({accountLink, account})
+            res.status(200).json(accountLink)
         } catch (error) {
             res.status(error.statusCode || 500).json(error.message);
         }
