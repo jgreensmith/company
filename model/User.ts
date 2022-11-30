@@ -25,6 +25,10 @@ const userSchema = new Schema({
   },
   orders: {
     type: Array
+  },
+  holidayMode: {
+    type: Boolean,
+    default: false
   }
   
   
