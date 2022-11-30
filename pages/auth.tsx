@@ -144,6 +144,11 @@ const Auth: NextPage = () => {
     }
     //login has optional prop, url from checkout after register or login normally
     const loginUser = async (url?: string) => {
+    
+      if(localStorage.getItem('googleRerouted')) {
+        localStorage.removeItem('googleRerouted')
+      }
+
       const res: any = await signIn("credentials", {
         redirect: false,
         email: formData.email,
