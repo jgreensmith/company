@@ -22,7 +22,7 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx", "pages/api/webhooks/stripe-webhook.js",   
+    "**/*.tsx",    
   ],
   "exclude": [
     "node_modules"
