@@ -12,9 +12,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 export const config = { api: { bodyParser: false } };
 
 
-//const webhookSecret = process.env.NEXT_PUBLIC_STRIPE_WEBHOOK_ENDPOINT_SECRET;
+const webhookSecret = process.env.NEXT_PUBLIC_CONNECTED_WEBHOOK_ENDPOINT_SECRET;
 //stripe CLI
-const webhookSecret ='whsec_OJT7dZ1pkSVcgSdURp0HqdMpIHsQp08v'
+//const webhookSecret ='whsec_OJT7dZ1pkSVcgSdURp0HqdMpIHsQp08v'
 
 
 const handler = async (req, res) => {
