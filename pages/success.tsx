@@ -5,6 +5,11 @@ import { useSession } from 'next-auth/react'
 import Layout from '../components/common/Layout'
 import Loader from '../components/svg/Loader'
 
+interface Data {
+  session: object,
+  customer: object
+}
+
 
 const Success = () => {
     const { data: session, status } = useSession({
@@ -24,16 +29,14 @@ const Success = () => {
               if(data.error) {
                 console.log(data.error)
               } else {
-                createStripe(data.customer)
-                //setStripeSession(data.session)
+                createStripe(data)
               }
-              console.log(data)
             })
         }
     }
 
 
-  const createStripe = async (customer: object) => {
+  const createStripe = async (data: Data) => {
     if (status === "authenticated") {
       await fetch('/api/add-customer', {
         method: 'POST',
@@ -41,7 +44,7 @@ const Success = () => {
           "Content-Type": "application/json",
         },
         // @ts-ignore
-        body: JSON.stringify({ id: session.user.id, customerId: customer.id })
+        body: JSON.stringify({ id: session.user.id, customerId: data.customer.id, subId: data.session.subscription })
       })
 
       await fetch('/api/create-stripe', {

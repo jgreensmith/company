@@ -1,8 +1,8 @@
 import Stripe from "stripe"
 import { buffer } from "micro";
 
-import dbConnect from "../../lib/dbConnect";
-import User from "../../model/User";
+import dbConnect from "../../../lib/dbConnect";
+import User from "../../../model/User";
 
 // @ts-ignore
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
