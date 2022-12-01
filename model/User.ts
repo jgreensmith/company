@@ -29,6 +29,10 @@ const userSchema = new Schema({
   holidayMode: {
     type: Boolean,
     default: false
+  },
+  canceled: {
+    type: Boolean,
+    default: false
   }
   
   
