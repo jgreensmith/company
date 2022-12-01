@@ -8,7 +8,7 @@ import Loader from '../components/svg/Loader'
 import dbConnect from "../lib/dbConnect";
 import User from "../model/User";
 import { usePriceContext } from '../utils/context/PriceContext';
-import { FlexStart } from '../utils/styles';
+import { CenteredDiv, FlexStart } from '../utils/styles';
 
 const Dashboard = ({user}) => {
   const { data: session, status } = useSession({required: true})
@@ -54,9 +54,12 @@ const Dashboard = ({user}) => {
           <Link href={user.studio} >access CMS</Link>
         }
           <button >access your stripe</button>
-          enter holiday mode
-          <Switch checked={isHoliday} onChange={handleHolidayChange} />
-
+          { !user.customerId &&
+            <CenteredDiv>
+            <Typography>enter holiday mode</Typography>
+            <Switch checked={isHoliday} onChange={handleHolidayChange} />
+            </CenteredDiv>
+          }
         {
           user.orders && 
           <Stack spacing={2} sx={{mb: 2}}>

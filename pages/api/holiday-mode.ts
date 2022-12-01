@@ -14,15 +14,9 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
             await dbConnect()
 
             // @ts-ignore
-            const user = await User.findByIdAndUpdate({_id: id}, { $set:  {holidayMode: holidayBool}})
+            await User.findByIdAndUpdate({_id: id}, { $set:  {holidayMode: holidayBool}})
 
-            //subscriptions
-            if(user.subId) {
-                await stripe.subscriptions.update(
-                    user.subId,
-                    {pause_collection: {behavior: 'keep_as_draft'}}
-                );
-            }
+            
             res.status(200).json({message: `Holiday mode: ${holidayBool}`})
         } catch (error) {
             res.status(error.statusCode || 500).json(error.message);

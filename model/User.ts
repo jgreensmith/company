@@ -20,9 +20,6 @@ const userSchema = new Schema({
   customerId: {
     type: String
   },
-  subId: {
-    type: String
-  },
   connectedAccount: {
     type: String
   },
