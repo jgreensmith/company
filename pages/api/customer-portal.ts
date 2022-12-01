@@ -16,7 +16,7 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
 
             const portal = await stripe.billingPortal.sessions.create({
                 customer: user.customerId,
-                return_url: 'http://localhost:3000/dashboard'
+                return_url: `${process.env.NEXT_PUBLIC_URL}/dashboard`
             })
             res.status(200).json(portal)
         } catch (error) {
