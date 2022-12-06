@@ -6,11 +6,40 @@ import { toast } from "react-hot-toast";
 import Layout from '../components/common/Layout'
 import { usePriceContext } from '../utils/context/PriceContext'
 import { CenteredDiv, FlexStart } from '../utils/styles'
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 const AddOns = ({filteredProducts, prices}) => {
 
+    const { data: session, status } = useSession()
+
     const {setSelectedPrice, selectedPrice, priceFormatter} = usePriceContext()
     const [addOns, setAddOns] = useState([])
+    const router = useRouter()
+
+    const handleAuthedAddOns = async () => {
+        
+        await fetch('/api/checkout', {
+            method: 'POST',
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ priceList: selectedPrice})
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            if(data.error) {
+                console.log(data.error)
+            } else {
+                router.push(data.url)
+            }
+        })
+    }
+
+    const handleNoAddOns = () => {
+        localStorage.removeItem('price')
+        router.push('/dashboard')
+    }
 
     const addOnsCheck = () => {
         if(localStorage.getItem('price')) {
@@ -43,7 +72,7 @@ const AddOns = ({filteredProducts, prices}) => {
         toast.error(`${name} Removed`)
         addOnsCheck()
     }
-    console.log(addOns)
+    console.log(selectedPrice)
 
     return (
         <Layout title="Add ons" seo="Pricing Options - Add ons">
@@ -80,12 +109,22 @@ const AddOns = ({filteredProducts, prices}) => {
             { addOns.length === 0  && 
                 <CenteredDiv sx={{m: 10}}>
                     <Typography variant='h6' gutterBottom>No add ons selected</Typography>
+                    { status === "authenticated" ? 
+
                         <Button
                             variant='contained'
-                            href='/auth'                        
+                            onClick={handleNoAddOns}                        
+                        >
+                            Go back to Dashboard
+                        </Button>
+                    :
+                        <Button
+                        variant='contained'
+                        href='/auth'                        
                         >
                             Continue without add ons
                         </Button>
+                    }
                </CenteredDiv>
             }
             <TableContainer component={Paper} elevation={0} square sx={{ maxHeight: 'calc(100vh - 240px)', overflowY: 'auto' }}>
@@ -132,7 +171,19 @@ const AddOns = ({filteredProducts, prices}) => {
                         <Grid item xs={6}>
                             <Typography>Subtotal: £1000</Typography>
                         </Grid>
+                        {addOns.length >= 1 &&
                         <Grid item xs={6}>
+                                { status === "authenticated" ? 
+                                <Button
+                                type="button"
+                                fullWidth
+                                onClick={handleAuthedAddOns}
+                                variant="contained"
+                                color="secondary"
+                                >
+                                    Add add ons to your account
+                                </Button>
+                                :
                                 <Button
                                 type="button"
                                 fullWidth
@@ -142,7 +193,9 @@ const AddOns = ({filteredProducts, prices}) => {
                                 >
                                     Create Account
                                 </Button>
+                                }
                         </Grid>
+                        }
                         
 
                     </Grid>

@@ -1,6 +1,7 @@
 import { Box, Card, CardHeader, Stack, Switch, Typography } from '@mui/material';
 import { getSession, signIn, useSession } from 'next-auth/react'
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React, { useEffect } from 'react'
 import { useState } from 'react';
 import Layout from '../components/common/Layout'
@@ -14,12 +15,36 @@ const Dashboard = ({user}) => {
   const { data: session, status } = useSession({required: true})
   const { selectedPrice } = usePriceContext()
   const [isHoliday, setIsHoliday] = useState(user.holidayMode)
+  const router = useRouter()
+  //TODO if cancelled, show button to switch to free with commission version
+  //button will make canceled and customerId null
 
   useEffect(() => {
     if(status === "authenticated") {
       holidayHandler()
     }
   }, [isHoliday])
+
+  //if paid account is canceled, option to change to free by setting cusID to null
+
+  const changeToFree = async () => {
+    if(status === "authenticated") {
+      await fetch('/api/change-to-free', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        //@ts-ignore
+        body: JSON.stringify({ id: session.user.id})
+    })
+    }
+  }
+
+  
+  const handleNoChangeAddOns = () => {
+    localStorage.setItem('price', JSON.stringify(['no_change']))
+    router.push('/add-ons')
+  }
 
   const handleHolidayChange = (e: React.ChangeEvent<HTMLInputElement> ) => {
     setIsHoliday(e.target.checked)
@@ -53,13 +78,24 @@ const Dashboard = ({user}) => {
           user.studio &&
           <Link href={user.studio} >access CMS</Link>
         }
+        {user.canceled &&
+          <button onClick={changeToFree}>Change to free ?</button>
+        }
           <button >access your stripe</button>
           { !user.customerId &&
+          <>
             <CenteredDiv>
             <Typography>enter holiday mode</Typography>
             <Switch checked={isHoliday} onChange={handleHolidayChange} />
             </CenteredDiv>
+            {/* <CenteredDiv>
+              <button onClick={handleBecomeCus}>become a customer for 20pcm</button>
+            </CenteredDiv> */}
+            </>
           }
+        <CenteredDiv>
+          <button onClick={handleNoChangeAddOns}>add some add ons!</button>
+        </CenteredDiv>
         {
           user.orders && 
           <Stack spacing={2} sx={{mb: 2}}>

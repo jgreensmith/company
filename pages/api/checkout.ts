@@ -18,6 +18,9 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
             const {priceList} = req.body
             //let prices = priceList
             const priceOption = priceList[0]
+            const params = {
+                
+            }
             
 
             if  (priceOption === "price_1LvH0PJlND9FCfnv12qQYH1P") {
@@ -44,8 +47,29 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
                     mode: 'payment'
                 })
                 
-                
-                
+            } else if (priceOption === "no_change") {
+                priceList.shift()
+
+                // @ts-ignore
+                session = await stripe.checkout.sessions.create({
+                    line_items: priceList.map((priceId: string) => {
+                        return {price: priceId, quantity: 1}
+                    }),
+                    cancel_url: `${req.headers.origin}/cancelled`,
+                    success_url: `${req.headers.origin}/noChangeSuccess?session_id={CHECKOUT_SESSION_ID}`,
+                    mode: 'payment'
+                })
+            } else if (priceOption === "become_customer") {
+                // @ts-ignore
+                session = await stripe.checkout.sessions.create({
+                    line_items: [
+                        {price: "price_1LvH0PJlND9FCfnv12qQYH1P", quantity: 1}
+                    ],
+                    cancel_url: `${req.headers.origin}/cancelled`,
+                    success_url: `${req.headers.origin}/existingAccountSuccess?session_id={CHECKOUT_SESSION_ID}`,
+                    mode: 'subscription',
+                })
+
             } else {
                 return res.status(400).json("not a valid price id" as ResponseData);
             }

@@ -13,7 +13,8 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
 
             // @ts-ignore
             await User.findByIdAndUpdate({_id: id}, {
-                customerId: customerId
+                customerId: customerId,
+                holidayMode: false
             })
             
             res.status(200).json({message: "user added"})
