@@ -1,5 +1,6 @@
 import Stripe from "stripe"
 import { buffer } from "micro";
+import nodemailer from "nodemailer";
 
 import dbConnect from "../../../lib/dbConnect";
 import User from "../../../model/User";
@@ -12,9 +13,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 export const config = { api: { bodyParser: false } };
 
 
-const webhookSecret = process.env.NEXT_PUBLIC_CONNECTED_STRIPE_WEBHOOK_ENDPOINT_SECRET;
+//const webhookSecret = process.env.NEXT_PUBLIC_CONNECTED_STRIPE_WEBHOOK_ENDPOINT_SECRET;
 //stripe CLI
-//const webhookSecret ='whsec_OJT7dZ1pkSVcgSdURp0HqdMpIHsQp08v'
+const webhookSecret ='whsec_2ad5b53f1809831bfa6d85c80d5eb6fc20d404e036efe12cbd8c07f4718b1ee3'
 
 
 const handler = async (req, res) => {
@@ -28,9 +29,9 @@ const handler = async (req, res) => {
 
         try {
             stripeEvent = stripe.webhooks.constructEvent(buffy, sig, webhookSecret);
-            console.log( 'stripeEvent', stripeEvent );
+            //console.log( 'stripeEvent', stripeEvent );
         } catch (err) {
-            console.log( 'errorrrr', err );
+            //console.log( 'errorrrr', err );
             res.status(400).send(`Webhook Error: ${err.message}`);
 
             return;
@@ -46,11 +47,59 @@ const handler = async (req, res) => {
             });
             const cusAdd = session.customer_details.address;
             const shipAdd = session.shipping_details.address;
+            const companyEmail = process.env.NEXT_PUBLIC_COMPANY_EMAIL
+            try {
+            
+            let transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false,
+            auth: {
+                user: companyEmail,
+                pass: process.env.NEXT_PUBLIC_COMPANY_PASSWORD
+            },
+            tls: {
+                // do not fail on invalid certs
+                rejectUnauthorized: false
+            },
+            });
+
+            await dbConnect()
+
+            const pidObj = await User.findOne({connectedAccount : { $eq: account }})
+
+            const orderConf = Math.floor(Math.random() * 100000000)
+
+            let url = new URL(`http://localhost:3001/merchants/${pidObj.pid}/add_reviews`)
+
+            url.searchParams.set('session_id', session.id)
+
+            url.searchParams.set('connect_id', account)
+
+
+
+            //TODO add store name to mongodb
+
+            const mailOptions = {
+                from: companyEmail,
+                to: session.customer_details.email,
+                subject: 'Order Confirmation STORE NAME',
+                text: `thankyou for buying from STORE NAME, your order confirmation is: #${orderConf} \n
+                please feel free to leave a review \n
+                ${url}`,
+                html:`<h2>thankyou for buying from STORE NAME, your order confirmation is: #${orderConf} <h2>\n
+                <h6>please feel free to leave a review ${url}<h6>`
+                
+
+            }
+            
+            let info = await transporter.sendMail(mailOptions)
+
+            console.log('email', info.messageId)
 
             
-            try {
                 console.log( 'sessionsession', session );
-                console.dir(items.data[0].price.product)
+                //console.dir(items.data[0].price.product)
                 await dbConnect()
 
                 await User.findOneAndUpdate(

@@ -33,8 +33,16 @@ const userSchema = new Schema({
   canceled: {
     type: Boolean,
     default: false
+  },
+  pid: {
+    type: String
+  },
+  preview_mode: {
+    type: String
+  },
+  manage_inventory: {
+    type: String
   }
-  
   
 });
 

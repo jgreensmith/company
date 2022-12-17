@@ -59,7 +59,7 @@ const Auth: NextPage = () => {
       }
     }
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setFormData({
         ...formData,
         [e.target.name]: e.target.value
