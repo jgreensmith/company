@@ -1,5 +1,6 @@
-import Stripe from "stripe"
+import Stripe from "stripe";
 import { buffer } from "micro";
+import nodemailer from "nodemailer";
 
 import dbConnect from "../../../lib/dbConnect";
 import User from "../../../model/User";
@@ -12,9 +13,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 export const config = { api: { bodyParser: false } };
 
 
-const webhookSecret = process.env.NEXT_PUBLIC_STRIPE_WEBHOOK_ENDPOINT_SECRET;
+//const webhookSecret = process.env.NEXT_PUBLIC_STRIPE_WEBHOOK_ENDPOINT_SECRET;
 //CLI
-//const webhookSecret = 'whsec_2ad5b53f1809831bfa6d85c80d5eb6fc20d404e036efe12cbd8c07f4718b1ee3'
+const webhookSecret = 'whsec_2ad5b53f1809831bfa6d85c80d5eb6fc20d404e036efe12cbd8c07f4718b1ee3'
 
 
 const handler = async (req, res) => {
@@ -37,8 +38,8 @@ const handler = async (req, res) => {
         }
 
         // Handle the event
-        if (event.type ==='customer.subscription.updated') {
-            
+        switch (event.type ) {
+            case 'customer.subscription.updated':
             const updated = event.data.object;
             //console.log(updated)
             try {
@@ -53,8 +54,62 @@ const handler = async (req, res) => {
                     }}
                 )
             } catch (error) {
-                console.error('subscription error', error);
-            }   
+                console.log('subscription error', error);
+            }  
+            break;
+            case 'invoice.payment_failed': 
+            try {
+                const customer = event.data.object.customer
+                const url = 'http://localhost:3000/dashboard'
+                const companyEmail = process.env.NEXT_PUBLIC_COMPANY_EMAIL
+
+                await dbConnect()
+
+                const user = await User.findOne({customerId :  customer })
+
+                if(user) {
+
+                let transporter = nodemailer.createTransport({
+                    host: 'smtp.gmail.com',
+                    port: 587,
+                    secure: false,
+                    auth: {
+                        user: companyEmail,
+                        pass: process.env.NEXT_PUBLIC_COMPANY_PASSWORD
+                    },
+                    tls: {
+                        // do not fail on invalid certs
+                        rejectUnauthorized: false
+                    },
+                });
+
+                
+
+                const mailOptions = {
+                    from: companyEmail,
+                    to: user.email,
+                    subject: 'Payment Declined',
+                    text: `Hello, Your account is on hold as we are unable to charge your card. \n
+                    to continue selling, please adjust check your payment details in the dashboard \n
+                     ${url} \n 
+                    alternatively, you can change the account settings to the 'Free with commission' account type \n
+                    kind regards, \n
+                    Greensmith Merchants
+                    `
+                }
+                let info = await transporter.sendMail(mailOptions)
+                console.log('email', info.messageId)
+                console.log('event', event)
+                
+            }
+            console.log('user', user)
+
+            } catch (error) {
+                console.log({error})
+            }
+            break;
+            default:
+                console.log(`Unhandled event type ${event.type}`)
         }
         res.send({ received: true });
     } else {

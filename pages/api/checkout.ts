@@ -31,7 +31,8 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
                     }),
                     cancel_url: `${req.headers.origin}/cancelled`,
                     success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-                    mode: 'subscription',
+                    mode: 'subscription'
+
                 })
             } else if (priceOption === "free_with_commission") {
 

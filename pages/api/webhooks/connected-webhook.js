@@ -1,4 +1,4 @@
-import Stripe from "stripe"
+import Stripe from "stripe";
 import { buffer } from "micro";
 import nodemailer from "nodemailer";
 
@@ -89,8 +89,6 @@ const handler = async (req, res) => {
                 ${url}`,
                 html:`<h2>thankyou for buying from STORE NAME, your order confirmation is: #${orderConf} <h2>\n
                 <h6>please feel free to leave a review ${url}<h6>`
-                
-
             }
             
             let info = await transporter.sendMail(mailOptions)
