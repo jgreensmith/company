@@ -21,12 +21,16 @@ const validatePassword = (password: string): boolean => {
 }
 const validateForm = async (
     name: string,
+    companyName: string,
     email: string,
     password: string
   ) => {
 
     if(name.length < 2) {
       return { error: "Please enter your name" }
+    }
+    if(companyName.length < 2) {
+      return { error: "Please enter your store name" }
     }
     
     if (!validateEmail(email)) {
@@ -57,10 +61,10 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
         .status(200)
         .json({ error: "This API call only accepts POST methods" });
     }           
-    const { name, email, password } = req.body
+    const { name, companyName, email, password } = req.body
 
             
-    const errorMessage = await validateForm( name, email, password);
+    const errorMessage = await validateForm( name, companyName, email, password);
     if (errorMessage) {
         return res.status(400).json(errorMessage as ResponseData);
     }
@@ -72,6 +76,7 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
     // create new User on MongoDB
     const newUser = new User({
         name,
+        companyName,
         email,
         hashedPassword,
     });

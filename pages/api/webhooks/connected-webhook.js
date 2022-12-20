@@ -66,11 +66,11 @@ const handler = async (req, res) => {
 
             await dbConnect()
 
-            const pidObj = await User.findOne({connectedAccount : { $eq: account }})
+            const store = await User.findOne({connectedAccount :  account })
 
             const orderConf = Math.floor(Math.random() * 100000000)
 
-            let url = new URL(`http://localhost:3001/merchants/${pidObj.pid}/add_reviews`)
+            let url = new URL(`http://localhost:3001/merchants/${store.pid}/add_reviews`)
 
             url.searchParams.set('session_id', session.id)
 
@@ -83,11 +83,11 @@ const handler = async (req, res) => {
             const mailOptions = {
                 from: companyEmail,
                 to: session.customer_details.email,
-                subject: 'Order Confirmation STORE NAME',
-                text: `thankyou for buying from STORE NAME, your order confirmation is: #${orderConf} \n
+                subject: `Order Confirmation ${store.companyName}`,
+                text: `thankyou for buying from ${store.companyName}, your order confirmation is: #${orderConf} \n
                 please feel free to leave a review \n
                 ${url}`,
-                html:`<h2>thankyou for buying from STORE NAME, your order confirmation is: #${orderConf} <h2>\n
+                html:`<h2>thankyou for buying from ${store.companyName}, your order confirmation is: #${orderConf} <h2>\n
                 <h6>please feel free to leave a review ${url}<h6>`
             }
             
@@ -101,7 +101,7 @@ const handler = async (req, res) => {
                 await dbConnect()
 
                 await User.findOneAndUpdate(
-                    {connectedAccount : { $eq: account }},
+                    {connectedAccount :  account },
                     {$push: {orders: {
                         customerDetails: {
                             address: {

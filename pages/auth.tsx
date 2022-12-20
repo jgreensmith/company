@@ -23,6 +23,7 @@ const Auth: NextPage = () => {
     const [firstName, setFirstName] = useState("")
     const [lastName, setLastName] = useState("")
     const [confirmPasswordError, setConfirmPasswordError] = useState(false)
+    const [companyName, setCompanyName] = useState("")
     const [error, setError] = useState('')
     const [passwordStrength, setPasswordStrength] = useState("weak")
     const [passStrColor, setPassStrColor] = useState("red")
@@ -124,19 +125,20 @@ const Auth: NextPage = () => {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ name, email: formData.email, password: formData.password })
+          body: JSON.stringify({ name, companyName, email: formData.email, password: formData.password })
         })
         .then((res) => res.json())
         .then((data) => {
           if(data.error) {
 
             setError(data.error) 
+            console.log(data.error)
           } else {
             //loginUser()
             checkout()
+            setLoader(true) 
           }
         });
-        setLoader(true) 
         
       } else {
         setConfirmPasswordError(true)
@@ -223,7 +225,18 @@ const Auth: NextPage = () => {
                                 sx={{backgroundColor: "#f1f3fa"}}
                                 onChange={(e) => setLastName(e.target.value)}
                                 />
-                        </InputContainer>                 
+                        </InputContainer>  
+                        <InputContainer >
+                            <TextField 
+                                name="companyName"
+                                value={companyName}
+                                variant="filled"
+                                fullWidth
+                                label="Store Name"       
+                                sx={{backgroundColor: "#f1f3fa"}}
+                                onChange={(e) => setCompanyName(e.target.value)}
+                                />
+                        </InputContainer>         
                         </React.Fragment>
                       )
                     }
