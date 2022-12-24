@@ -47,16 +47,16 @@ const handler = async (req, res) => {
             });
             const cusAdd = session.customer_details.address;
             const shipAdd = session.shipping_details.address;
-            const companyEmail = process.env.NEXT_PUBLIC_COMPANY_EMAIL
+            const companyEmail = process.env.EMAIL_FROM
             try {
             
             let transporter = nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            port: 587,
+            host: process.env.EMAIL_SERVER_HOST,
+            port: process.env.EMAIL_SERVER_PORT,
             secure: false,
             auth: {
                 user: companyEmail,
-                pass: process.env.NEXT_PUBLIC_COMPANY_PASSWORD
+                pass: process.env.EMAIL_SERVER_PASSWORD
             },
             tls: {
                 // do not fail on invalid certs

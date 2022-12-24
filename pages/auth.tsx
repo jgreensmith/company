@@ -89,31 +89,33 @@ const Auth: NextPage = () => {
     }, [formData.password])
     
     //create stripe accounton succesfull register then login user after stripe flow
-    const checkout = async () => {
-      if(selectedPrice.length > 1 || selectedPrice[0] === "price_1LvH0PJlND9FCfnv12qQYH1P") {
+    // const checkout = async () => {
+    //   if(selectedPrice.length > 1 || selectedPrice[0] === "price_1LvH0PJlND9FCfnv12qQYH1P") {
 
-        await fetch('/api/checkout', {
-          method: 'POST',
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ priceList: selectedPrice})
+    //     await fetch('/api/checkout', {
+    //       method: 'POST',
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify({ priceList: selectedPrice})
           
-        })
-        .then((res) => res.json())
-        .then((data) => {
-          if(data.error) {
-            console.log(data.error)
-          } else {
-            loginUser(data.url)
-          }
-        })
-      } else {
-        loginUser('/noCustomerSuccess')
+    //     })
+    //     .then((res) => res.json())
+    //     .then((data) => {
+    //       if(data.error) {
+    //         console.log(data.error)
+    //       } else {
+    //         loginUser(data.url)
+    //       }
+    //     })
+    //   } else {
+    //     loginUser('/noCustomerSuccess')
 
-      }
+    //   }
       
-    }
+    // }
+    
+
     //register when using credentials then call stripe account set up
     const register = async () => {
       if(confirmPassword === formData.password) {
@@ -134,8 +136,7 @@ const Auth: NextPage = () => {
             setError(data.error) 
             console.log(data.error)
           } else {
-            //loginUser()
-            checkout()
+            router.push(`/re_enter_auth?token=${data.hashedEmail}`)            
             setLoader(true) 
           }
         });

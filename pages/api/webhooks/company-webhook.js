@@ -61,7 +61,7 @@ const handler = async (req, res) => {
             try {
                 const customer = event.data.object.customer
                 const url = 'http://localhost:3000/dashboard'
-                const companyEmail = process.env.NEXT_PUBLIC_COMPANY_EMAIL
+                const companyEmail = process.env.EMAIL_FROM
 
                 await dbConnect()
 
@@ -70,12 +70,12 @@ const handler = async (req, res) => {
                 if(user) {
 
                 let transporter = nodemailer.createTransport({
-                    host: 'smtp.gmail.com',
-                    port: 587,
+                    host: process.env.EMAIL_SERVER_HOST,
+                    port: process.env.EMAIL_SERVER_PORT,
                     secure: false,
                     auth: {
                         user: companyEmail,
-                        pass: process.env.NEXT_PUBLIC_COMPANY_PASSWORD
+                        pass: process.env.EMAIL_SERVER_PASSWORD
                     },
                     tls: {
                         // do not fail on invalid certs

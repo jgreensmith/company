@@ -1,11 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "../../lib/dbConnect";
 import User from "../../model/User";
-import bcrypt from "bcrypt"; 
+import bcrypt from "bcrypt";
+import nodemailer from "nodemailer";
+
 
 interface ResponseData {
     error?: string;
-    msg?: string;
+    hashedEmail?: string;
   }
 
 
@@ -72,19 +74,58 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
      // hash password auto gen salt
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    const hashedEmail = await bcrypt.hash(email, 12);
+
+    const url = new URL('http://localhost:3000/verify_email')
+
+    url.searchParams.set('token', hashedEmail)
+    const companyEmail = process.env.EMAIL_FROM
+
+
+    let transporter = nodemailer.createTransport({
+        host: process.env.EMAIL_SERVER_HOST,
+        port: process.env.EMAIL_SERVER_PORT,
+        secure: false,
+        auth: {
+            user: companyEmail,
+            pass: process.env.EMAIL_SERVER_PASSWORD
+        },
+        tls: {
+            // do not fail on invalid certs
+            rejectUnauthorized: false
+        },
+    });
+
+    
+
+    const mailOptions = {
+        from: companyEmail,
+        to: email,
+        subject: 'Verify Email',
+        text: `Hello, \n
+        Please follow the link below to verify your email \n
+          ${url} \n
+        kind regards, \n
+        Greensmith Merchants
+        `
+    }
+    let info = await transporter.sendMail(mailOptions)
+    console.log('email', info.messageId)
+
 
     // create new User on MongoDB
     const newUser = new User({
         name,
         companyName,
         email,
-        hashedPassword,
+        hashedEmail,
+        hashedPassword
     });
         
     newUser
     .save()
     .then(() =>
-      res.status(200).json({ msg: "Successfuly created new User: " + newUser })
+      res.status(200).json({hashedEmail})
     )
     .catch((err: string) =>
       res.status(400).json({ error: "Error on '/api/register': " + err })
