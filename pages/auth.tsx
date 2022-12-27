@@ -9,6 +9,7 @@ import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
 import Loader from '../components/svg/Loader';
 import { useRouter } from 'next/router';
 import { usePriceContext } from '../utils/context/PriceContext';
+import { toast } from 'react-hot-toast';
 
 interface IFormData {
   email: string
@@ -46,6 +47,9 @@ const Auth: NextPage = () => {
         setAuthType(false)
       } else {
         setAuthType(true)
+      }
+      if(router.query.pass_updated) {
+        toast.success('Password Succesfully Updated!')
       }
     }, [])
 
@@ -322,6 +326,14 @@ const Auth: NextPage = () => {
 
                     <Button  variant="contained" type="submit" fullWidth sx={{p:2}}>{authType ? "Log In" : "Create Account"}</Button>
                     </CenteredDiv>
+                    {authType && 
+                      <Typography color='black' variant='body1'>
+                          
+                          <Button variant='text' sx={{textTransform: 'capitalize'}} href='/forgotten_password'>
+                            Forgotten Password?
+                          </Button>
+                      </Typography>
+                    }
                     </CenteredDiv>
    
                 

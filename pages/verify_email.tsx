@@ -6,7 +6,7 @@ import Loader from '../components/svg/Loader'
 
 import { CenteredDiv } from '../utils/styles'
 
-const VerifyEmail = ({isVerified}: any) => {
+const VerifyEmail = () => {
     const router = useRouter()
     const [data, setData] = useState(null)
 
@@ -56,26 +56,3 @@ const VerifyEmail = ({isVerified}: any) => {
 
 export default VerifyEmail
 
-// export async function getServerSideProps(context: any) {
-//     try {
-
-    
-//     await dbConnect()
-
-//     // @ts-ignore
-//     const query = await User.findOneAndUpdate({hashedEmail: context.query.token},
-//         {isVerified: true}
-//     )
-//     const user = JSON.parse(JSON.stringify(query))
-
-//     const isVerified = user.isVerified 
-    
-//     return {
-//         props: {
-//             isVerified
-//         }
-//     }
-// } catch (error) {
-//     console.log(error)    
-// }
-// }
