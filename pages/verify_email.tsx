@@ -1,31 +1,52 @@
 import { Alert, Box, Typography } from '@mui/material'
-import React from 'react'
+import { useRouter } from 'next/router'
+import React, { useEffect, useState } from 'react'
 import { AiFillCheckCircle } from 'react-icons/ai'
-import dbConnect from '../lib/dbConnect'
-import User from '../model/User'
+import Loader from '../components/svg/Loader'
+
 import { CenteredDiv } from '../utils/styles'
 
 const VerifyEmail = ({isVerified}: any) => {
-  return (
+    const router = useRouter()
+    const [data, setData] = useState(null)
+
+    const getData = async () => {
+        await fetch('/api/verify-email', {
+            method: 'POST',
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ token: router.query.token })
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            if(data.error) {
+                console.log(data.error)
+            } else {
+                setData(data)
+            }
+        })
+    }
+
+    useEffect(() => {
+        getData()
+    }, [])
+
+    if(!data) return <Loader message='loading' />
+
+    console.log(data)
+
+    return (
     <Box className='background' sx={{backgroundImage: "url('/blurry-gradient-haikei.svg')"}}>
         <Box className='auth' sx={{width: {xs: '80%', sm: '420px'}}}>
             <CenteredDiv>
-                { isVerified ?
-                    <React.Fragment>
+                
                     <Alert sx={{ display: 'flex', justifyContent: 'center', border: '1px solid green', p: {vs: '0 40px', sm: '0 70px'}}} icon={<AiFillCheckCircle />} severity='success'>
                         <Typography variant='h2' align='center' sx={{width: '100%'}} >Email Verification Successful</Typography>
                     </Alert>
                     <Typography variant='body2'>You may now safely close this tab</Typography>
-                    </React.Fragment>
-                : 
-                    <React.Fragment>
-
-                    <Alert sx={{ display: 'flex', justifyContent: 'center', border: '1px solid green', p: {vs: '0 40px', sm: '0 70px'}}} icon={<AiFillCheckCircle />} severity='success'>
-                        <Typography variant='h2' align='center' sx={{width: '100%'}} >Email Verification Successful</Typography>
-                    </Alert>
-                    <Typography variant='body2'>You may now safely close this tab</Typography>
-                    </React.Fragment>
-                }
+                
             </CenteredDiv>
         </Box>
     </Box>
@@ -35,27 +56,26 @@ const VerifyEmail = ({isVerified}: any) => {
 
 export default VerifyEmail
 
-export async function getServerSideProps(context: any) {
-    try {
+// export async function getServerSideProps(context: any) {
+//     try {
 
-    let isVerified: boolean
     
-    await dbConnect()
+//     await dbConnect()
 
-    // @ts-ignore
-    const query = await User.findOneAndUpdate({hashedEmail: context.query.token},
-        {isVerified: true}
-    )
-    const user = JSON.parse(JSON.stringify(query))
+//     // @ts-ignore
+//     const query = await User.findOneAndUpdate({hashedEmail: context.query.token},
+//         {isVerified: true}
+//     )
+//     const user = JSON.parse(JSON.stringify(query))
 
-    isVerified = user?.isVerified ? user.isVerified : false
+//     const isVerified = user.isVerified 
     
-    return {
-        props: {
-            isVerified
-        }
-    }
-} catch (error) {
-    console.log(error)    
-}
-}
+//     return {
+//         props: {
+//             isVerified
+//         }
+//     }
+// } catch (error) {
+//     console.log(error)    
+// }
+// }
