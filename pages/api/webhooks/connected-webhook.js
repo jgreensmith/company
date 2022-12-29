@@ -39,14 +39,7 @@ const handler = async (req, res) => {
 
         if ( 'checkout.session.completed' === stripeEvent.type ) {
             const session = stripeEvent.data.object;
-            const account = stripeEvent.account
-            const items = await stripe.checkout.sessions.listLineItems(session.id, { 
-                expand: ["data.price.product"]
-            }, {
-                stripeAccount: account  
-            });
-            const cusAdd = session.customer_details.address;
-            const shipAdd = session.shipping_details.address;
+            const account = stripeEvent.account;
             const companyEmail = process.env.EMAIL_FROM
             try {
             
@@ -80,7 +73,7 @@ const handler = async (req, res) => {
 
             //TODO add store name to mongodb
 
-            const mailOptions = {
+            const mailOptionsCustomer = {
                 from: companyEmail,
                 to: session.customer_details.email,
                 subject: `Order Confirmation ${store.companyName}`,
@@ -90,10 +83,21 @@ const handler = async (req, res) => {
                 html:`<h2>thankyou for buying from ${store.companyName}, your order confirmation is: #${orderConf} <h2>\n
                 <h6>please feel free to leave a review ${url}<h6>`
             }
-            
-            let info = await transporter.sendMail(mailOptions)
+            const dash = new URL('http://localhost:3000/dashboard')
 
-            console.log('email', info.messageId)
+            const mailOptionsConnectedClient = {
+                from: companyEmail,
+                to: store.email,
+                subject: `Order Up for ${store.companyName}`,
+                text: `You have a new order waiting: #${orderConf} \n
+                You can view the order details on your dashboard: \n
+                ${dash}`,
+                
+            }
+            
+            await transporter.sendMail(mailOptionsCustomer);
+            await transporter.sendMail(mailOptionsConnectedClient);
+
 
             
                 console.log( 'sessionsession', session );
@@ -103,38 +107,11 @@ const handler = async (req, res) => {
                 await User.findOneAndUpdate(
                     {connectedAccount :  account },
                     {$push: {orders: {
-                        customerDetails: {
-                            address: {
-                              city: cusAdd.city,
-                              country: cusAdd.country,
-                              line1: cusAdd.line1,
-                              line2: cusAdd.line2,
-                              postal_code: cusAdd.postal_code,
-                              
-                            },
-                            email: session.customer_details.email,
-                            name: session.customer_details.name
-                        },
-                        shippingDetails: {
-                            address: {
-                              city: shipAdd.city,
-                              country: shipAdd.country,
-                              line1: shipAdd.line1,
-                              line2: shipAdd.line2,
-                              postal_code: shipAdd.postal_code,
-                            },
-                            name: session.shipping_details.name
-                        },
-                        status: session.payment_status,
-                        items: items.data.map((item) => {
-                            const product = item.price.product
-                            return {
-                                price: item.price.unit_amount,
-                                id: product.id,
-                                name: product.name,
-                                description: product.description
-                            }
-                        })
+                        sessionId: session.id,
+                        orderNo: orderConf,
+                        email: session.customer_details.email,
+                        customerName: session.customer_details.name,
+                        completed: false
                     }}}
                 )
             } catch (error) {

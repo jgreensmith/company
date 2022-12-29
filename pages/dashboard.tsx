@@ -11,19 +11,41 @@ import User from "../model/User";
 import { usePriceContext } from '../utils/context/PriceContext';
 import { CenteredDiv, FlexStart } from '../utils/styles';
 
-const Dashboard = ({user}) => {
+const Dashboard = () => {
   const { data: session, status } = useSession({required: true})
   const { selectedPrice } = usePriceContext()
-  const [isHoliday, setIsHoliday] = useState(user.holidayMode)
+  const [user, setUser] = useState(null)
+  const [isHoliday, setIsHoliday] = useState(user?.holidayMode)
   const router = useRouter()
-  //TODO if cancelled, show button to switch to free with commission version
-  //button will make canceled and customerId null
+  
 
   useEffect(() => {
     if(status === "authenticated") {
       holidayHandler()
     }
   }, [isHoliday])
+
+  useEffect(() => {
+    if(status === "authenticated") {
+      //@ts-ignore
+      getUser(session.user.id)
+    }
+  }, [session])
+
+  const getUser = async (id: string) => {
+    //@ts-ignore
+    await fetch(`/api/get-user?id=${id}`, {
+      method: 'GET'
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      if(data.error) {
+        console.log(data.error)
+      } else {
+        setUser(data)
+      }
+    })
+  }
 
   //if paid account is canceled, option to change to free by setting cusID to null
 
@@ -65,7 +87,8 @@ const Dashboard = ({user}) => {
     })  }
 
 
-  if(status === "loading") return <Loader message='loading dashboard' />
+  if(status === "loading") return <Loader message='awaiting authentication' />
+  if(!user) return <Loader message='loading user data' />
   //if(status === "unauthenticated") return <div><span>Must be signed in</span> <button onClick={() => signIn()}>sign in</button></div>
 
   //console.log(user)
@@ -103,8 +126,8 @@ const Dashboard = ({user}) => {
               <Card key={i}>
                 <CardHeader title={
                   <FlexStart>
-                    <Typography variant="h3">{order.customerDetails.name}</Typography>
-                    <Typography variant="body1">{order.status}</Typography>
+                    <Typography variant="h3">{order.customerName}</Typography>
+                    {/* <Typography variant="body1">{order.completed}</Typography> */}
                   </FlexStart>
                 }
                 />
@@ -120,17 +143,5 @@ const Dashboard = ({user}) => {
 
 export default Dashboard
 
-export async function getServerSideProps(ctx) {
-  try {
-    await dbConnect()
-    const session = await getSession(ctx)
-    // @ts-ignore
-    const user = await User.findById({_id: session.user.id})
-    return {
-      props: {user: JSON.parse(JSON.stringify(user))}
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}
+
   
