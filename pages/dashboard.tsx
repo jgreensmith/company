@@ -112,7 +112,9 @@ const Dashboard = () => {
       if(data.error) {
         console.log(data.error)
       } else {
-        isHoliday ? toast.success('Holiday mode activated, enjoy your break!', {duration: 4000}) : toast.success('Holiday mode deactivated, welcome back!', {duration: 4000})
+        isHoliday ? 
+        toast.success('Holiday mode activated, enjoy your break!', {duration: 4000}) 
+        : toast.success('Holiday mode deactivated, welcome back!', {duration: 4000})
       }
     })  
   }
