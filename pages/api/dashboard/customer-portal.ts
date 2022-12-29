@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe"
-import dbConnect from "../../lib/dbConnect";
-import User from "../../model/User";
+import dbConnect from "../../../lib/dbConnect";
+import User from "../../../model/User";
 
 // @ts-ignore
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -16,7 +16,9 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
 
             const portal = await stripe.billingPortal.sessions.create({
                 customer: user.customerId,
-                return_url: 'https://company-cyan.vercel.app/dashboard'
+                //return_url: 'https://company-cyan.vercel.app/dashboard'
+                return_url: 'http://localhost:3000/dashboard'
+
             })
             res.status(200).json(portal)
         } catch (error) {

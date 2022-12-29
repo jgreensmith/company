@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
-import dbConnect from "../../lib/dbConnect";
-import User from "../../model/User";
+import dbConnect from "../../../lib/dbConnect";
+import User from "../../../model/User";
 
 // @ts-ignore
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);

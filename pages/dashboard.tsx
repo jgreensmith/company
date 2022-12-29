@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react'
 import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import Layout from '../components/common/Layout'
 import Loader from '../components/svg/Loader'
-import dbConnect from "../lib/dbConnect";
-import User from "../model/User";
+
 import { usePriceContext } from '../utils/context/PriceContext';
 import { CenteredDiv, FlexStart } from '../utils/styles';
 
@@ -15,6 +15,8 @@ const Dashboard = () => {
   const { data: session, status } = useSession({required: true})
   const { selectedPrice } = usePriceContext()
   const [user, setUser] = useState(null)
+  const [orderData, setOrderData] = useState(null)
+
   const [isHoliday, setIsHoliday] = useState(user?.holidayMode)
   const router = useRouter()
   
@@ -34,7 +36,7 @@ const Dashboard = () => {
 
   const getUser = async (id: string) => {
     //@ts-ignore
-    await fetch(`/api/get-user?id=${id}`, {
+    await fetch(`/api/dashboard/get-user?id=${id}`, {
       method: 'GET'
     })
     .then((res) => res.json())
@@ -47,18 +49,42 @@ const Dashboard = () => {
     })
   }
 
+  const handleOrder = async (id: string, x: string) => {
+    if(id) {
+      await fetch(`/api/dashboard/get-order?session_id=${id}&account_id=${x}`, {
+          method: 'GET'
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        if(data.error) {
+          console.log(data.error)
+        } else {
+          setOrderData(data)
+        }
+      })
+  }
+  }
+
   //if paid account is canceled, option to change to free by setting cusID to null
 
   const changeToFree = async () => {
     if(status === "authenticated") {
-      await fetch('/api/change-to-free', {
+      await fetch('/api/dashboard/change-to-free', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
         },
         //@ts-ignore
         body: JSON.stringify({ id: session.user.id})
-    })
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        if(data.error) {
+          console.log(data.error)
+        } else {
+          toast.success('changed to free with commission mode!')
+        }
+      })
     }
   }
 
@@ -73,7 +99,7 @@ const Dashboard = () => {
   }
 
   const holidayHandler = async () => {
-    await fetch('/api/holiday-mode', {
+    await fetch('/api/dashboard/holiday-mode', {
       method: 'POST',
       headers: {
         "Content-Type": "application/json",
@@ -91,10 +117,10 @@ const Dashboard = () => {
   if(!user) return <Loader message='loading user data' />
   //if(status === "unauthenticated") return <div><span>Must be signed in</span> <button onClick={() => signIn()}>sign in</button></div>
 
-  //console.log(user)
+  console.log({user})
   return (
     <Layout title='Dashboard' seo='dashboard'>
-        <Box className='background' sx={{backgroundImage: "url('/blurry-gradient-haikei.svg')"}}>
+        <Box className='background' sx={{backgroundImage: "url('/blurry-gradient-haikei.svg')", display: 'flex', flexDirection: 'column'}}>
 
         welcome {user.name} to your dutty dashboard
         {
@@ -123,7 +149,7 @@ const Dashboard = () => {
           user.orders && 
           <Stack spacing={2} sx={{mb: 2}}>
             {user.orders.map((order, i) => (
-              <Card key={i}>
+              <Card key={i} onClick={() => handleOrder(order.sessionId, user.connectedAccount)}>
                 <CardHeader title={
                   <FlexStart>
                     <Typography variant="h3">{order.customerName}</Typography>

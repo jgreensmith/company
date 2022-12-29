@@ -14,7 +14,7 @@ const Account = ({user}) => {
   const router = useRouter()
   
   const customerPortal = async () => {
-      await fetch('/api/customer-portal', {
+      await fetch('/api/dashboard/customer-portal', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
