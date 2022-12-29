@@ -109,8 +109,13 @@ const Dashboard = () => {
     })
     .then((res) => res.json())
     .then((data) => {
-      console.log(data)
-    })  }
+      if(data.error) {
+        console.log(data.error)
+      } else {
+        isHoliday ? toast.success('Holiday mode activated, enjoy your break!', {duration: 4000}) : toast.success('Holiday mode deactivated, welcome back!', {duration: 4000})
+      }
+    })  
+  }
 
 
   if(status === "loading") return <Loader message='awaiting authentication' />
