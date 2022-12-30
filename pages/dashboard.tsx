@@ -1,4 +1,4 @@
-import { Box, Card, CardHeader, Stack, Switch, Typography } from '@mui/material';
+import { Box, Card, CardHeader, Dialog, Stack, Switch, Typography } from '@mui/material';
 import { getSession, signIn, useSession } from 'next-auth/react'
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -6,26 +6,31 @@ import React, { useEffect } from 'react'
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import Layout from '../components/common/Layout'
+import OrderDetails from '../components/OrderDetails';
 import Loader from '../components/svg/Loader'
 
-import { usePriceContext } from '../utils/context/PriceContext';
 import { CenteredDiv, FlexStart } from '../utils/styles';
+
+interface Order {
+  sessionId: string,
+  customerName: string,
+  orderNo: number
+}
 
 const Dashboard = () => {
   const { data: session, status } = useSession({required: true})
-  const { selectedPrice } = usePriceContext()
   const [user, setUser] = useState(null)
   const [orderData, setOrderData] = useState(null)
-
-  const [isHoliday, setIsHoliday] = useState(user?.holidayMode)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [isHoliday, setIsHoliday] = useState(user?.holidayMode || null)
   const router = useRouter()
   
 
-  useEffect(() => {
-    if(status === "authenticated") {
-      holidayHandler()
-    }
-  }, [isHoliday])
+  // useEffect(() => {
+  //   if(status === "authenticated") {
+  //     holidayHandler()
+  //   }
+  // }, [isHoliday])
 
   useEffect(() => {
     if(status === "authenticated") {
@@ -60,6 +65,7 @@ const Dashboard = () => {
           console.log(data.error)
         } else {
           setOrderData(data)
+          setModalOpen(true)
         }
       })
   }
@@ -94,8 +100,10 @@ const Dashboard = () => {
     router.push('/add-ons')
   }
 
-  const handleHolidayChange = (e: React.ChangeEvent<HTMLInputElement> ) => {
-    setIsHoliday(e.target.checked)
+  const handleHolidayChange = () => {
+    //setIsHoliday(e.target.checked)
+    setIsHoliday(!isHoliday)
+    holidayHandler()
   }
 
   const holidayHandler = async () => {
@@ -105,16 +113,17 @@ const Dashboard = () => {
         "Content-Type": "application/json",
       },
       //@ts-ignore
-      body: JSON.stringify({id: session.user.id, holidayBool: isHoliday})
+      body: JSON.stringify({id: session.user.id})
     })
     .then((res) => res.json())
     .then((data) => {
       if(data.error) {
         console.log(data.error)
       } else {
-        isHoliday ? 
+        data.holiday ? 
         toast.success('Holiday mode activated, enjoy your break!', {duration: 4000}) 
         : toast.success('Holiday mode deactivated, welcome back!', {duration: 4000})
+        location.reload()
       }
     })  
   }
@@ -124,7 +133,7 @@ const Dashboard = () => {
   if(!user) return <Loader message='loading user data' />
   //if(status === "unauthenticated") return <div><span>Must be signed in</span> <button onClick={() => signIn()}>sign in</button></div>
 
-  console.log({user})
+  console.log(user.holidayMode)
   return (
     <Layout title='Dashboard' seo='dashboard'>
         <Box className='background' sx={{backgroundImage: "url('/blurry-gradient-haikei.svg')", display: 'flex', flexDirection: 'column'}}>
@@ -142,7 +151,8 @@ const Dashboard = () => {
           <>
             <CenteredDiv>
             <Typography>enter holiday mode</Typography>
-            <Switch checked={isHoliday} onChange={handleHolidayChange} />
+            {/* <Switch checked={isHoliday} onChange={handleHolidayChange} /> */}
+            <button onClick={holidayHandler}>{user.holidayMode ? "go back to work" : "go on holiday"}</button>
             </CenteredDiv>
             {/* <CenteredDiv>
               <button onClick={handleBecomeCus}>become a customer for 20pcm</button>
@@ -155,12 +165,12 @@ const Dashboard = () => {
         {
           user.orders && 
           <Stack spacing={2} sx={{mb: 2}}>
-            {user.orders.map((order, i) => (
-              <Card key={i} onClick={() => handleOrder(order.sessionId, user.connectedAccount)}>
+            {user.orders.map((order: Order) => (
+              <Card sx={{cursor: 'pointer'}} key={order.sessionId} onClick={() => handleOrder(order.sessionId, user.connectedAccount)}>
                 <CardHeader title={
                   <FlexStart>
                     <Typography variant="h3">{order.customerName}</Typography>
-                    {/* <Typography variant="body1">{order.completed}</Typography> */}
+                    <Typography variant="body1">#{order.orderNo}</Typography>
                   </FlexStart>
                 }
                 />
@@ -170,6 +180,15 @@ const Dashboard = () => {
 
         }
         </Box>
+        <Dialog
+        open={modalOpen}
+        fullScreen
+        onClose={() => setModalOpen(false)}
+       
+        >
+          
+          <OrderDetails props={{ order: orderData, setModalOpen}} />
+        </Dialog> 
     </Layout>
   )
 }
