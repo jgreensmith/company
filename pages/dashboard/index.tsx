@@ -5,11 +5,11 @@ import { useRouter } from 'next/router';
 import React, { useEffect } from 'react'
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
-import Layout from '../components/common/Layout'
-import OrderDetails from '../components/OrderDetails';
-import Loader from '../components/svg/Loader'
+import Layout from '../../components/common/Layout'
+import OrderDetails from '../../components/OrderDetails';
+import Loader from '../../components/svg/Loader'
 
-import { CenteredDiv, FlexStart } from '../utils/styles';
+import { CenteredDiv, FlexStart } from '../../utils/styles';
 
 interface Order {
   sessionId: string,
@@ -22,15 +22,8 @@ const Dashboard = () => {
   const [user, setUser] = useState(null)
   const [orderData, setOrderData] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
-  const [isHoliday, setIsHoliday] = useState(user?.holidayMode || null)
   const router = useRouter()
-  
 
-  // useEffect(() => {
-  //   if(status === "authenticated") {
-  //     holidayHandler()
-  //   }
-  // }, [isHoliday])
 
   useEffect(() => {
     if(status === "authenticated") {
@@ -54,8 +47,15 @@ const Dashboard = () => {
     })
   }
 
+  const refundHandler = async (id: string) => {
+    setModalOpen(false)
+    router.push(`/dashboard/authorize_refund?session_id=${id}&account_id=${user.connectedAccount}`)
+    
+  }
+
   const handleOrder = async (id: string, x: string) => {
     if(id) {
+      setModalOpen(true)
       await fetch(`/api/dashboard/get-order?session_id=${id}&account_id=${x}`, {
           method: 'GET'
       })
@@ -65,7 +65,6 @@ const Dashboard = () => {
           console.log(data.error)
         } else {
           setOrderData(data)
-          setModalOpen(true)
         }
       })
   }
@@ -100,12 +99,6 @@ const Dashboard = () => {
     router.push('/add-ons')
   }
 
-  const handleHolidayChange = () => {
-    //setIsHoliday(e.target.checked)
-    setIsHoliday(!isHoliday)
-    holidayHandler()
-  }
-
   const holidayHandler = async () => {
     await fetch('/api/dashboard/holiday-mode', {
       method: 'POST',
@@ -133,7 +126,8 @@ const Dashboard = () => {
   if(!user) return <Loader message='loading user data' />
   //if(status === "unauthenticated") return <div><span>Must be signed in</span> <button onClick={() => signIn()}>sign in</button></div>
 
-  console.log(user.holidayMode)
+  console.log({orderData})
+  console.log({user})
   return (
     <Layout title='Dashboard' seo='dashboard'>
         <Box className='background' sx={{backgroundImage: "url('/blurry-gradient-haikei.svg')", display: 'flex', flexDirection: 'column'}}>
@@ -187,8 +181,9 @@ const Dashboard = () => {
        
         >
           
-          <OrderDetails props={{ order: orderData, setModalOpen}} />
+          <OrderDetails props={{ order: orderData, setModalOpen, refundHandler}} />
         </Dialog> 
+        
     </Layout>
   )
 }

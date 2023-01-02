@@ -1,14 +1,17 @@
-import { Container, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Typography } from '@mui/material'
+import { Button, Container, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Typography } from '@mui/material'
 import React from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import { usePriceContext } from '../utils/context/PriceContext'
 
 import { FlexEnd, FlexStart } from '../utils/styles'
+import Loader from './svg/Loader'
 
 const OrderDetails = ({props}) => {
 
-    const {order, setModalOpen} = props
+    const {order, setModalOpen, refundHandler} = props
     const { priceFormatter } = usePriceContext()
+
+    if(!order) return <Loader message='fetching order data' />
 
     return (
     <Container  >
@@ -23,6 +26,9 @@ const OrderDetails = ({props}) => {
         <Container sx={{pl: 2, mb: 2}}>
             <FlexStart>
                 <Typography variant='subtitle1' align='left' gutterBottom>Shipping Address</Typography>
+            </FlexStart>
+            <FlexStart>
+                <Typography variant='body1'>{order.session.shipping_details.name},</Typography>
             </FlexStart>
             <FlexStart>
                 <Typography variant='body1'>{order.session.shipping_details.address.line1},</Typography>
@@ -57,7 +63,7 @@ const OrderDetails = ({props}) => {
                         {item.price.product.name}
                         </TableCell>
                         <TableCell align="right">{item.quantity}</TableCell>
-                        <TableCell align="right">{priceFormatter(item.price.unit_amount / 100)}</TableCell>
+                        <TableCell align="right">{priceFormatter(item.price.unit_amount)}</TableCell>
                     </TableRow>
                     ))}
                 </TableBody>
@@ -65,27 +71,30 @@ const OrderDetails = ({props}) => {
         </TableContainer>
         <hr />
 
-        {/* <Container sx={{p: 2}}>
+        <Container sx={{p: 2}}>
             <FlexEnd>
 
-                <Typography variant='subtitle1' > Subtotal: {priceFormatter.format(parseFloat(order.session.amount_subtotal / 100).toFixed(2))}</Typography>
+                <Typography variant='subtitle1' > Subtotal: {priceFormatter(order.session.amount_subtotal)}</Typography>
             </FlexEnd>
             <FlexEnd>
 
-                <Typography variant='subtitle1' align='left'> Shipping: {priceFormatter.format(parseFloat(order.session.total_details.amount_shipping / 100).toFixed(2))}</Typography>
+                <Typography variant='subtitle1' align='left'> Shipping: {priceFormatter(order.session.total_details.amount_shipping)}</Typography>
             </FlexEnd>
             <FlexEnd>
 
-                <Typography variant='subtitle1' align='left'> Taxes: {priceFormatter.format(parseFloat(order.session.total_details.amount_tax / 100).toFixed(2))}</Typography>
+                <Typography variant='subtitle1' align='left'> Taxes: {priceFormatter(order.session.total_details.amount_tax)}</Typography>
             </FlexEnd>
             <FlexEnd>
-              <Typography variant='h6' align='left'> Total: {priceFormatter.format(parseFloat(order.session.amount_total / 100).toFixed(2))}</Typography>
+              <Typography variant='h6' align='left'> Total: {priceFormatter(order.session.amount_total)}</Typography>
 
             </FlexEnd>
+            <FlexStart>
+                <Button onClick={() => refundHandler(order.session.id)} variant='text' color='error'>authorize refund</Button>
+            </FlexStart>
         </Container>
         
                           
-                           */}
+                          
         
 
 
