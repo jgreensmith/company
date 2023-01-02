@@ -1,10 +1,10 @@
 import { Button, Container, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Typography } from '@mui/material'
 import React from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
-import { usePriceContext } from '../utils/context/PriceContext'
+import { usePriceContext } from '../../utils/context/PriceContext'
 
-import { FlexEnd, FlexStart } from '../utils/styles'
-import Loader from './svg/Loader'
+import { FlexEnd, FlexStart } from '../../utils/styles'
+import Loader from '../svg/Loader'
 
 const OrderDetails = ({props}) => {
 

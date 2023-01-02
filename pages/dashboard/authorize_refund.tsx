@@ -1,15 +1,17 @@
-import { Box, Button, Checkbox, Container, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material'
+import { Box, Button, Checkbox, Container, Dialog, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
+import Refund from '../../components/dashboard/Refund'
 import Loader from '../../components/svg/Loader'
-import { FlexStart } from '../../utils/styles'
+import { FlexBetween, FlexStart } from '../../utils/styles'
 
 const AuthorizeRefund = () => {
     const { data: session, status } = useSession({required: true})
     const router = useRouter()
     const [checked, setChecked] = useState([]);
     const [shippingChecked, setShippingChecked] = useState(false)
+    const [modalOpen, setModalOpen] = useState(false)
     const [orderData, setOrderData] = useState(null);
     const shipping = {id: 'shipping', amount_total: orderData?.session.total_details.amount_shipping}
 
@@ -57,7 +59,7 @@ const AuthorizeRefund = () => {
     }, [session])
 
     console.log(checked)
-    //console.log(orderData)
+    console.log(orderData)
 
 
     if(!orderData) return <Loader message='fetching order data' />
@@ -110,9 +112,7 @@ const AuthorizeRefund = () => {
           </ListItem>
         );
       })}
-      <ListItem
-            
-          >
+      <ListItem  >
             <ListItemButton role={undefined} onClick={(e) => handleShippingToggle(e, shipping)} dense>
               <ListItemIcon>
                 <Checkbox
@@ -126,21 +126,26 @@ const AuthorizeRefund = () => {
             <Typography variant='body2'>{orderData.session.total_details.amount_shipping}</Typography>
             </ListItemButton>
           </ListItem>
-      {/* <ListItem
-            secondaryAction={
-              <Checkbox
-                edge="end"
-                onChange={(e) => handleShippingToggle(e, 'shipping', orderData.session.total_details.amount_shipping)}
-                checked={shippingChecked}
-              />
-            }
-          >
-            <Typography variant='body2'>Shipping</Typography>
-            <Typography variant='body2'>{orderData.session.total_details.amount_shipping}</Typography>
-
-          </ListItem> */}
+      
     </List>
+    <FlexBetween >
+    <Button variant='text' color='error' href='/dashboard' >
+      cancel refund
+    </Button>
+    <Button onClick={() => setModalOpen(true)}  >
+      review refund
+    </Button>
+    </FlexBetween>
+
             </Box>
+            <Dialog
+              open={modalOpen}
+              onClose={() => setModalOpen(false)}
+            
+              >
+                
+                <Refund props={{ paymentIntent: orderData.session.payment_intent, name: orderData.session.shipping_details.name, checked, setModalOpen }} />
+              </Dialog> 
             </Box>
   )
 }

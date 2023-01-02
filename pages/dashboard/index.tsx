@@ -6,7 +6,8 @@ import React, { useEffect } from 'react'
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import Layout from '../../components/common/Layout'
-import OrderDetails from '../../components/OrderDetails';
+import OrderDetails from '../../components/dashboard/OrderDetails';
+import RefundConfirmation from '../../components/dashboard/RefundConfirmation';
 import Loader from '../../components/svg/Loader'
 
 import { CenteredDiv, FlexStart } from '../../utils/styles';
@@ -22,6 +23,7 @@ const Dashboard = () => {
   const [user, setUser] = useState(null)
   const [orderData, setOrderData] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
+  const [refundModalOpen, setRefundModalOpen] = useState(false)
   const router = useRouter()
 
 
@@ -29,6 +31,9 @@ const Dashboard = () => {
     if(status === "authenticated") {
       //@ts-ignore
       getUser(session.user.id)
+    }
+    if(router.query.refund) {
+      setRefundModalOpen(true)
     }
   }, [session])
 
@@ -52,6 +57,10 @@ const Dashboard = () => {
     router.push(`/dashboard/authorize_refund?session_id=${id}&account_id=${user.connectedAccount}`)
     
   }
+  const handleRefundClose = () => {
+    setRefundModalOpen(false)
+    router.push('/dashboard')
+}
 
   const handleOrder = async (id: string, x: string) => {
     if(id) {
@@ -182,6 +191,12 @@ const Dashboard = () => {
         >
           
           <OrderDetails props={{ order: orderData, setModalOpen, refundHandler}} />
+        </Dialog> 
+        <Dialog
+        open={refundModalOpen}
+        onClose={handleRefundClose}
+        >
+          <RefundConfirmation handleRefundClose={ handleRefundClose } />
         </Dialog> 
         
     </Layout>

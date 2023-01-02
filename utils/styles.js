@@ -26,3 +26,7 @@ export const CenteredDiv = styled('div')({
     display: 'flex', 
     justifyContent: 'start'
   });
+  export const FlexBetween = styled('div')({
+    display: 'flex', 
+    justifyContent: 'space-between'
+  });
