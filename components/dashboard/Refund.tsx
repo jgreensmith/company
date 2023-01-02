@@ -10,6 +10,7 @@ const Refund = ({props}) => {
     const { priceFormatter } = usePriceContext();
     const router = useRouter()
     const [ authorise, setAuthorise ] = useState('');
+    const [ error, setError ] = useState(null);
     const checkedValues = checked.map((x: any) => x.amount_total)
     const totalRefund = checkedValues.reduce((a: number, b: number) => a + b, 0)
 
@@ -25,8 +26,8 @@ const Refund = ({props}) => {
             })
             .then((res) => res.json())
             .then((data) => {
-                if(data.error) {
-                    console.log(data.error)
+                if(data.error.code === "charge_already_refunded") {
+                    setError("Charge Already Refunded")
                 } else {
                     router.push('/dashboard?refund=true')
                 }
@@ -88,6 +89,7 @@ const Refund = ({props}) => {
             onChange={(e) => setAuthorise(e.target.value)}
             />
         </InputContainer>
+        {error && <Typography variant='body2' color='error'>{error}</Typography>}
         <FlexStart>
             <Button onClick={authoriseRefund} disabled={authorise === 'REFUND' ? false : true} variant='text'>authorize refund</Button>
         </FlexStart>
