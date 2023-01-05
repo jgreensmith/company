@@ -68,7 +68,7 @@ const Payout = ({props}) => {
                 Bank name: {account.bank_name}
             </Typography>
             <Typography variant='subtitle1'>
-                type: {account.object}
+                Type: {account.object}
             </Typography>
             <Typography variant='subtitle1'>
                 Country: {account.country}

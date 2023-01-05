@@ -206,7 +206,7 @@ const Dashboard = () => {
         
         <Container >
           <Typography ref={payoutListRef} variant='subtitle2'>Payouts</Typography>
-          <Payouts props={{payouts: dashData.payouts, account: dashData.account.external_accounts.data[0]}} />
+          <Payouts props={{payouts: dashData.payouts, account: dashData.account}} />
         </Container>
         
         </Box>

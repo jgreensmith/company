@@ -1,7 +1,8 @@
-import { Container, Table, Paper, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Dialog, IconButton, TableFooter } from '@mui/material'
+import { Container, Table, Paper, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Dialog, IconButton, TableFooter, Button } from '@mui/material'
 import React, { useState } from 'react'
 import { GrNext, GrPrevious } from 'react-icons/gr'
 import { usePriceContext } from '../../utils/context/PriceContext'
+import Loader from '../svg/Loader'
 import Payout from './Payout'
 
 const Payouts = ({props}) => {
@@ -9,6 +10,8 @@ const Payouts = ({props}) => {
     const { priceFormatter, stripeDate } = usePriceContext()
     const [modalOpen, setModalOpen] = useState(false)
     const [payout, setPayout] = useState(null)
+    const [loader, setLoader] = useState(false)
+    const [payoutsData, setPayoutsData] = useState(payouts.data)
     const statusColor = (status: string) => {
         if(status === "paid") {
             return 'green'
@@ -21,11 +24,32 @@ const Payouts = ({props}) => {
         }
     }
 
-    const handleClick = async (payout: any) => {
+    const handleClick = (payout: any) => {
         setModalOpen(true)
         setPayout(payout)
     }
    
+    const handlePageChange = async () => {
+        setLoader(true)
+        const date = payoutsData[9].arrival_date
+        
+        await fetch(`/api/dashboard/payouts?account=${account.id}&date=${date}`, {
+            method: 'GET'
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            if(data.error) {
+                console.log(data.error)
+            } else {
+                setPayoutsData(data.payouts.data)
+                setLoader(false)
+            }
+        })
+    }
+
+    console.log({payoutsData})
+
+    if(loader) return <Loader message='Loading Payouts' />
 
   return (
     <Container>
@@ -39,7 +63,7 @@ const Payouts = ({props}) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                {payouts.data.map((p: any) => (
+                {payoutsData.map((p: any) => (
                     <TableRow
                         hover
                         onClick={() => handleClick(p)}
@@ -62,9 +86,9 @@ const Payouts = ({props}) => {
 
                 <TableRow  >
                     <TableCell sx={{width: '100%', pr: 0}} align='right'>
-                    <IconButton><GrPrevious /></IconButton>
+                        <Button disabled={payoutsData === payouts.data ? true : false}  onClick={() => setPayoutsData(payouts.data)}>Current</Button>
 
-                        <IconButton><GrNext /></IconButton>
+                        <Button onClick={handlePageChange}>See older</Button>
                     </TableCell>
                 </TableRow>
                 </TableFooter>
@@ -76,7 +100,7 @@ const Payouts = ({props}) => {
         fullScreen
         onClose={() => setModalOpen(false)}
         >
-          <Payout props={{ setModalOpen, account, payout, statusColor}} />
+          <Payout props={{ setModalOpen, account: account.external_accounts.data[0], payout, statusColor}} />
         </Dialog> 
     </Container>
   )
