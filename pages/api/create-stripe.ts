@@ -13,7 +13,14 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
             const { email, id } = req.body
             const account = await stripe.accounts.create({
                 type: 'standard',
-                email: email
+                email: email,
+                settings: {
+                    payouts: {
+                        schedule: {
+                            weekly_anchor: 'friday'
+                        }
+                    }
+                }
             })
             await dbConnect()
             // @ts-ignore

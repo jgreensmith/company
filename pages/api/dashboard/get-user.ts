@@ -1,8 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import Stripe from "stripe";
 import dbConnect from "../../../lib/dbConnect";
 import User from "../../../model/User";
 
-
+// @ts-ignore
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export default async function handler( req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'GET') {
@@ -12,7 +14,11 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
             //@ts-ignore
             const user = await User.findById({_id: req.query.id})
 
-            res.status(200).json(user);
+            const balance = await stripe.balance.retrieve({stripeAccount: user.connectedAccount})
+
+            const payouts = await stripe.payouts.list({stripeAccount: user.connectedAccount})
+
+            res.status(200).json({user, balance, payouts});
         } catch (error) {
             res.status(404).json({error})
         }
