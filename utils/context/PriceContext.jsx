@@ -18,13 +18,21 @@ export const PriceContext = ({ children }) => {
       const num = unit/100
       return new Intl.NumberFormat("en-GB", {style: "currency", currency: "gbp"}).format(num)
   } 
+  const stripeDate = (unix) => {
+        
+    const date = new Date(unix * 1000);
+
+    return date.toLocaleString("en-GB")
+
+}
  
   return (
     <Context.Provider
       value={{
         selectedPrice,
         setSelectedPrice,
-        priceFormatter
+        priceFormatter,
+        stripeDate
       }}
     >
       {children}

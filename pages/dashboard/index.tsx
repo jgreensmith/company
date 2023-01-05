@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import Layout from '../../components/common/Layout'
 import OrderDetails from '../../components/dashboard/OrderDetails';
+import Payouts from '../../components/dashboard/Payouts';
 import RefundConfirmation from '../../components/dashboard/RefundConfirmation';
 import Loader from '../../components/svg/Loader'
 import { usePriceContext } from '../../utils/context/PriceContext';
@@ -21,9 +22,11 @@ interface Order {
 
 const Dashboard = () => {
   const { data: session, status } = useSession({required: true})
-  const [user, setUser] = useState(null)
-  const [balance, setBalance] = useState(null)
-  const [payouts, setPayouts] = useState(null)
+  const [dashData, setDashData] = useState(null)
+  // const [user, setUser] = useState(null)
+  // const [balance, setBalance] = useState(null)
+  // const [payouts, setPayouts] = useState(null)
+  // const [account, setAccount] = useState(null)
   const [orderData, setOrderData] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [refundModalOpen, setRefundModalOpen] = useState(false)
@@ -55,16 +58,15 @@ const Dashboard = () => {
       if(data.error) {
         console.log(data.error)
       } else {
-        setUser(data.user)
-        setBalance(data.balance)
-        setPayouts(data.payouts)
+        setDashData(data)
+
       }
     })
   }
 
   const refundHandler = async (id: string) => {
     setModalOpen(false)
-    router.push(`/dashboard/authorize_refund?session_id=${id}&account_id=${user.connectedAccount}`)
+    router.push(`/dashboard/authorize_refund?session_id=${id}&account_id=${dashData.user.connectedAccount}`)
     
   }
   const handleRefundClose = () => {
@@ -142,41 +144,41 @@ const Dashboard = () => {
 
 
   if(status === "loading") return <Loader message='awaiting authentication' />
-  if(!user) return <Loader message='loading user data' />
+  if(!dashData) return <Loader message='loading user data' />
   //if(status === "unauthenticated") return <div><span>Must be signed in</span> <button onClick={() => signIn()}>sign in</button></div>
 
-  console.log({user})
-  console.log({balance})
-  console.log({payouts})
+  console.log({dashData})
+  
+
 
   return (
     <Layout title='Dashboard' seo='dashboard'>
-        <Box className='background' sx={{backgroundImage: "url('/blurry-gradient-haikei.svg')", display: 'flex', flexDirection: 'column', boxSizing: 'border-box', overflow: 'scroll', pt: 10}}>
+        <Box className='background' sx={{backgroundImage: "url('/blurry-gradient-haikei.svg')", display: 'flex', flexDirection: 'column', boxSizing: 'border-box', overflow: 'scroll', pt: 60}}>
         
-        welcome {user.name} to your dutty dashboard
+        welcome {dashData.user.name} to your dutty dashboard
         {
-          balance && 
+          dashData.balance && 
           <CenteredDiv>
             <Button onClick={() => scrollTo(payoutListRef.current)}>
 
-            <Typography variant='h3'>Available: {priceFormatter(balance.available[0].amount)}</Typography>
-            <Typography variant='subtitle2'>Pending: {priceFormatter(balance.pending[0].amount)}</Typography>
+            <Typography variant='h3'>Available: {priceFormatter(dashData.balance.available[0].amount)}</Typography>
+            <Typography variant='subtitle2'>Pending: {priceFormatter(dashData.balance.pending[0].amount)}</Typography>
             </Button>
           </CenteredDiv>
         }
         {
-          user.studio &&
-          <Link href={user.studio} >access CMS</Link>
+          dashData.user.studio &&
+          <Link href={dashData.user.studio} >access CMS</Link>
         }
-        {user.canceled &&
+        {dashData.user.canceled &&
           <button onClick={changeToFree}>Change to free ?</button>
         }
           <button >access your stripe</button>
-          { !user.customerId &&
+          { !dashData.user.customerId &&
           <>
             <CenteredDiv>
             <Typography>enter holiday mode</Typography>
-            <button onClick={holidayHandler}>{user.holidayMode ? "go back to work" : "go on holiday"}</button>
+            <button onClick={holidayHandler}>{dashData.user.holidayMode ? "go back to work" : "go on holiday"}</button>
             </CenteredDiv>
             
             </>
@@ -185,10 +187,10 @@ const Dashboard = () => {
           <button onClick={handleNoChangeAddOns}>add some add ons!</button>
         </CenteredDiv>
         {
-          user.orders && 
+          dashData.user.orders && 
           <Stack spacing={2} sx={{mb: 2}}>
-            {user.orders.map((order: Order) => (
-              <Card sx={{cursor: 'pointer'}} key={order.sessionId} onClick={() => handleOrder(order.sessionId, user.connectedAccount)}>
+            {dashData.user.orders.map((order: Order) => (
+              <Card sx={{cursor: 'pointer'}} key={order.sessionId} onClick={() => handleOrder(order.sessionId, dashData.user.connectedAccount)}>
                 <CardHeader title={
                   <FlexStart>
                     <Typography variant="h3">{order.customerName}</Typography>
@@ -204,6 +206,7 @@ const Dashboard = () => {
         
         <Container >
           <Typography ref={payoutListRef} variant='subtitle2'>Payouts</Typography>
+          <Payouts props={{payouts: dashData.payouts, account: dashData.account.external_accounts.data[0]}} />
         </Container>
         
         </Box>
