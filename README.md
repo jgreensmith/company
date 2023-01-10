@@ -1,4 +1,4 @@
-## Nextjs e-ccommerce website builder (dashboard)
+## Nextjs e-commerce website builder (dashboard)
 
 This repo is the part of the website builder that a buisness owner would sign up to, and manage there orders, payments and their account. the dashboard is fully integrated with Stripe. The dashboard uses react-modals to show requested Stripe data, and `scrollIntoView()` to scroll to specific data tables.
 
