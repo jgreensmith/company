@@ -1,13 +1,11 @@
 import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
-import { toast } from "react-hot-toast";
 
-import { usePriceContext } from '../utils/context/PriceContext'
-import Loader from '../components/svg/Loader'
-import Layout from '../components/common/Layout';
+import { usePriceContext } from '../../utils/context/PriceContext'
+import Loader from '../../components/svg/Loader'
 import { Box, Button, Divider, TextField, Typography } from '@mui/material';
-import { CenteredDiv, InputContainer } from '../utils/styles';
+import { CenteredDiv, InputContainer } from '../../utils/styles';
 
 
 const GoogleStripe = () => {
@@ -21,19 +19,19 @@ const GoogleStripe = () => {
   //push to pricing if new user logs in without selecting pricing options
 
   
-  const selectPrice = async () => {
-    const res: any = await signOut({
-      redirect: false,
-      callbackUrl: '/pricing'
-    })
-    if(res.error) {
-      console.log(res.error)
-    } else {
+  // const selectPrice = async () => {
+  //   const res: any = await signOut({
+  //     redirect: false,
+  //     callbackUrl: '/pricing'
+  //   })
+  //   if(res.error) {
+  //     console.log(res.error)
+  //   } else {
 
-      router.push(res.url)
-      toast.error("Please select a pricing option")
-    }
-  }
+  //     router.push(res.url)
+  //     toast.error("Please select a pricing option")
+  //   }
+  // }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -61,7 +59,7 @@ const GoogleStripe = () => {
 
   const checkout = async () => {
 
-    if(selectedPrice?.length > 1 || selectedPrice[0] === "price_1LvH0PJlND9FCfnv12qQYH1P") {
+    // if(selectedPrice?.length > 1 || selectedPrice[0] === "price_1LvH0PJlND9FCfnv12qQYH1P") {
       
       await fetch('/api/checkout', {
         method: 'POST',
@@ -80,17 +78,17 @@ const GoogleStripe = () => {
           }
         })
    
-    } else {
-      router.push('/noCustomerSuccess')
-    }
+    // } else {
+    //   router.push('/noCustomerSuccess')
+    // }
   }
 
-  useEffect (() => {
-    if(!localStorage.getItem('price')) {
-      //checkout()
-      selectPrice()
-    } 
-  }, [])
+  // useEffect (() => {
+  //   if(!localStorage.getItem('price')) {
+  //     //checkout()
+  //     selectPrice()
+  //   } 
+  // }, [])
 
   if(status === 'loading') return <Loader message="Loading..." />
 

@@ -17,7 +17,7 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
             if(!user?.isVerified) {
               return  res.status(400).json({error: 'Please use a verified email address'})
             } else {
-                const url = new URL('http://localhost:3000/update_password')
+                const url = new URL('http://localhost:3000/auth/update_password')
 
                 url.searchParams.set('token', user.hashedEmail)
                 const companyEmail = process.env.EMAIL_FROM

@@ -3,12 +3,12 @@ import React, { ChangeEvent, useEffect, useState } from 'react'
 import { useSession, signIn, getProviders, signOut } from "next-auth/react";
 
 import { Box, Button, Container, Typography, Divider, TextField, IconButton, InputAdornment, FilledInput, InputLabel, FormControl, Tooltip, Fade, Paper } from '@mui/material';
-import { CenteredDiv, FlexEnd, InputContainer } from '../utils/styles'
+import { CenteredDiv, FlexEnd, InputContainer } from '../../utils/styles'
 import { FcGoogle } from 'react-icons/fc'
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
-import Loader from '../components/svg/Loader';
+import Loader from '../../components/svg/Loader';
 import { useRouter } from 'next/router';
-import { usePriceContext } from '../utils/context/PriceContext';
+import { usePriceContext } from '../../utils/context/PriceContext';
 import { toast } from 'react-hot-toast';
 
 interface IFormData {
@@ -55,14 +55,14 @@ const Auth: NextPage = () => {
 
     //if user has already been authenticated but not selected pricing options
     //now they have selected price user must go through stripe flow
-    const handleGoogleSignIn = async () => {
-      if(localStorage.getItem('googleRerouted')) {
-        await signIn('google', { callbackUrl: '/googleStripe' })
-        localStorage.removeItem('googleRerouted')
-      } else {
-        await signIn('google', { callbackUrl: '/dashboard' })
-      }
-    }
+    // const handleGoogleSignIn = async () => {
+    //   if(localStorage.getItem('googleRerouted')) {
+    //     await signIn('google', { callbackUrl: '/googleStripe' })
+    //     localStorage.removeItem('googleRerouted')
+    //   } else {
+    //     await signIn('google', { callbackUrl: '/dashboard' })
+    //   }
+    // }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setFormData({
@@ -92,32 +92,7 @@ const Auth: NextPage = () => {
       passwordStrengthHandler(formData.password)
     }, [formData.password])
     
-    //create stripe accounton succesfull register then login user after stripe flow
-    // const checkout = async () => {
-    //   if(selectedPrice.length > 1 || selectedPrice[0] === "price_1LvH0PJlND9FCfnv12qQYH1P") {
-
-    //     await fetch('/api/checkout', {
-    //       method: 'POST',
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //       body: JSON.stringify({ priceList: selectedPrice})
-          
-    //     })
-    //     .then((res) => res.json())
-    //     .then((data) => {
-    //       if(data.error) {
-    //         console.log(data.error)
-    //       } else {
-    //         loginUser(data.url)
-    //       }
-    //     })
-    //   } else {
-    //     loginUser('/noCustomerSuccess')
-
-    //   }
-      
-    // }
+   
     
 
     //register when using credentials then call stripe account set up
@@ -140,7 +115,7 @@ const Auth: NextPage = () => {
             setError(data.error) 
             console.log(data.error)
           } else {
-            router.push(`/re_enter_auth?token=${data.hashedEmail}`)            
+            router.push(`/auth/re_enter_auth?token=${data.hashedEmail}`)            
             setLoader(true) 
           }
         });
@@ -150,12 +125,8 @@ const Auth: NextPage = () => {
       }
     }
     //login has optional prop, url from checkout after register or login normally
-    const loginUser = async (url?: string) => {
+    const loginUser = async () => {
     
-      if(localStorage.getItem('googleRerouted')) {
-        localStorage.removeItem('googleRerouted')
-      }
-
       const res: any = await signIn("credentials", {
         redirect: false,
         email: formData.email,
@@ -164,9 +135,7 @@ const Auth: NextPage = () => {
       })
       
       if (res.error) {
-        setError(res.error)  
-      } else if (url) {
-        router.push(url)      
+        setError(res.error)        
       } else {
         router.push(res.url)      
       }
@@ -198,7 +167,7 @@ const Auth: NextPage = () => {
             </CenteredDiv>
             <Divider />
             <CenteredDiv sx={{width: '100%', mt: 2, mb: 1, p: '0 10px'}}>
-                <Button fullWidth variant='contained' startIcon={<FcGoogle />} sx={{backgroundColor: "#000000e0", p: 1}} onClick={handleGoogleSignIn}>
+                <Button fullWidth variant='contained' startIcon={<FcGoogle />} sx={{backgroundColor: "#000000e0", p: 1}} onClick={() => signIn('google', { callbackUrl: '/dashboard' })}>
                     <Typography variant="body1" align='center' sx={{textTransform: 'capitalize', pl: 2}}>{authType ? "Log In" : "Create account"} With Google</Typography> 
                 </Button>
             </CenteredDiv>
@@ -329,7 +298,7 @@ const Auth: NextPage = () => {
                     {authType && 
                       <Typography color='black' variant='body1'>
                           
-                          <Button variant='text' sx={{textTransform: 'capitalize'}} href='/forgotten_password'>
+                          <Button variant='text' sx={{textTransform: 'capitalize'}} href='/auth/forgotten_password'>
                             Forgotten Password?
                           </Button>
                       </Typography>

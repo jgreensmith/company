@@ -2,9 +2,9 @@ import { Alert, Box, Typography } from '@mui/material'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { AiFillCheckCircle } from 'react-icons/ai'
-import Loader from '../components/svg/Loader'
+import Loader from '../../components/svg/Loader'
 
-import { CenteredDiv } from '../utils/styles'
+import { CenteredDiv } from '../../utils/styles'
 
 const VerifyEmail = () => {
     const router = useRouter()
@@ -42,10 +42,10 @@ const VerifyEmail = () => {
         <Box className='auth' sx={{width: {xs: '80%', sm: '420px'}}}>
             <CenteredDiv>
                 
-                    <Alert sx={{ display: 'flex', justifyContent: 'center', border: '1px solid green', p: {vs: '0 40px', sm: '0 70px'}}} icon={<AiFillCheckCircle />} severity='success'>
-                        <Typography variant='h2' align='center' sx={{width: '100%'}} >Email Verification Successful</Typography>
-                    </Alert>
-                    <Typography variant='body2'>You may now safely close this tab</Typography>
+                <Alert sx={{ display: 'flex', justifyContent: 'center', border: '1px solid green', p: {vs: '0 40px', sm: '0 70px'}}} icon={<AiFillCheckCircle />} severity='success'>
+                    <Typography variant='h2' align='center' sx={{width: '100%'}} >Email Verification Successful</Typography>
+                </Alert>
+                <Typography variant='body2'>You may now safely close this tab</Typography>
                 
             </CenteredDiv>
         </Box>

@@ -76,7 +76,7 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
 
     const hashedEmail = await bcrypt.hash(email, 12);
 
-    const url = new URL('http://localhost:3000/verify_email')
+    const url = new URL('http://localhost:3000/auth/verify_email')
 
     url.searchParams.set('token', hashedEmail)
     const companyEmail = process.env.EMAIL_FROM

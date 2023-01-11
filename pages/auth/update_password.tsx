@@ -2,10 +2,10 @@ import { Box, Button, Divider, Fade, FilledInput, FormControl, IconButton, Input
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
-import Loader from '../components/svg/Loader'
-import dbConnect from '../lib/dbConnect'
-import User from '../model/User'
-import { CenteredDiv, InputContainer, FlexEnd } from '../utils/styles'
+import Loader from '../../components/svg/Loader'
+import dbConnect from '../../lib/dbConnect'
+import User from '../../model/User'
+import { CenteredDiv, InputContainer, FlexEnd } from '../../utils/styles'
 
 interface UpdatePassProps {
     token: string

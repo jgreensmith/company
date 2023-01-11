@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Box, Button, Divider, FilledInput, FormControl, IconButton, InputAdornment, TextField, Typography } from '@mui/material'
 
-import { CenteredDiv, InputContainer } from '../utils/styles'
+import { CenteredDiv, InputContainer } from '../../utils/styles'
 
 
 const ForgottenPassword = () => {

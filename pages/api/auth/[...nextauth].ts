@@ -77,7 +77,7 @@ export default NextAuth({
     pages: {
         signIn: "/auth",
         error: "/auth",
-        newUser: "/googleStripe"
+        newUser: "/auth/googleStripe"
     },
     secret: process.env.JWT_SECRET,
     debug: process.env.NODE_ENV === "development",

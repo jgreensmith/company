@@ -3,10 +3,10 @@ import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
-import dbConnect from '../lib/dbConnect'
-import User from '../model/User'
-import { usePriceContext } from '../utils/context/PriceContext'
-import { CenteredDiv, InputContainer } from '../utils/styles'
+import dbConnect from '../../lib/dbConnect'
+import User from '../../model/User'
+import { usePriceContext } from '../../utils/context/PriceContext'
+import { CenteredDiv, InputContainer } from '../../utils/styles'
 
 
 const ReEnterAuth = ({isVerified, user}) => {
@@ -23,7 +23,7 @@ const ReEnterAuth = ({isVerified, user}) => {
     }
 
     const checkout = async () => {
-        if(selectedPrice.length > 1 || selectedPrice[0] === "price_1LvH0PJlND9FCfnv12qQYH1P") {
+        // if(selectedPrice.length > 1 || selectedPrice[0] === "price_1LvH0PJlND9FCfnv12qQYH1P") {
   
           await fetch('/api/checkout', {
             method: 'POST',
@@ -41,17 +41,17 @@ const ReEnterAuth = ({isVerified, user}) => {
               loginUser(data.url)
             }
           })
-        } else {
-          loginUser('/noCustomerSuccess')
-        }
+        // } else {
+        //   loginUser('/noCustomerSuccess')
+        // }
         
     }
 
     const loginUser = async (url: string) => {
     
-        if(localStorage.getItem('googleRerouted')) {
-          localStorage.removeItem('googleRerouted')
-        }
+        // if(localStorage.getItem('googleRerouted')) {
+        //   localStorage.removeItem('googleRerouted')
+        // }
   
         const res: any = await signIn("credentials", {
             redirect: false,
