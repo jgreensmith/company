@@ -18,7 +18,7 @@ interface IFormData {
 
 
 const Auth: NextPage = () => {
-    const [authType, setAuthType] = useState(true)
+    const [isNewUser, setIsNewUser] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
     const [confirmPassword, setConfirmPassword] = useState("")
     const [firstName, setFirstName] = useState("")
@@ -43,11 +43,11 @@ const Auth: NextPage = () => {
     }
 
     useEffect(() => {
-      if(localStorage.getItem('price')) {
-        setAuthType(false)
-      } else {
-        setAuthType(true)
-      }
+      // if(localStorage.getItem('price')) {
+      //   setIsNewUser(false)
+      // } else {
+      //   setIsNewUser(true)
+      // }
       if(router.query.pass_updated) {
         toast.success('Password Succesfully Updated!')
       }
@@ -144,7 +144,7 @@ const Auth: NextPage = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault()
-      !authType ? register() : loginUser()
+      isNewUser ? register() : loginUser()
     }
 
   if(loader) return <Loader message="authentication successfull"/>
@@ -152,30 +152,32 @@ const Auth: NextPage = () => {
 
   return (
     <Box className='background' sx={{backgroundImage: "url('/blurry-gradient-haikei.svg')"}}>
+      {/* <CenteredDiv sx={{height: '100%', width: '100%', overflow: 'scroll', paddingTop: '20px'}}> */}
         <Box className='auth' sx={{width: {xs: '80%', sm: '420px'}}}>
             <CenteredDiv>
-                <Typography color='black' variant='h5'>{authType ? "Log In" : "Create an account"}</Typography>
-                {authType && 
+                <Typography color='black' variant='h5'>{!isNewUser ? "Log In" : "Create an account"}</Typography>
+                
                 <Typography color='black' variant='body1'>
-                        Not registered yet?
+                        {isNewUser ? 'Already got an account? ' :  'Not registered yet?'}
                     
-                    <Button variant='text' sx={{textTransform: 'capitalize'}} href='/pricing'>
-                  Create Account
+                    <Button variant='text' sx={{textTransform: 'capitalize'}} onClick={() => setIsNewUser(!isNewUser)}>
+                  {isNewUser ? 'Log in' :  'Create an account'}
+
                     </Button>
                 </Typography>
-                }
+                
             </CenteredDiv>
             <Divider />
             <CenteredDiv sx={{width: '100%', mt: 2, mb: 1, p: '0 10px'}}>
                 <Button fullWidth variant='contained' startIcon={<FcGoogle />} sx={{backgroundColor: "#000000e0", p: 1}} onClick={() => signIn('google', { callbackUrl: '/dashboard' })}>
-                    <Typography variant="body1" align='center' sx={{textTransform: 'capitalize', pl: 2}}>{authType ? "Log In" : "Create account"} With Google</Typography> 
+                    <Typography variant="body1" align='center' sx={{textTransform: 'capitalize', pl: 2}}>{!isNewUser ? "Log In" : "Create account"} With Google</Typography> 
                 </Button>
             </CenteredDiv>
             <Divider>or</Divider>
             <form autoComplete="off" noValidate onSubmit={handleSubmit}>
               <CenteredDiv sx={{ml: 2, mt: 2, pr: 1}}>
                     {
-                      !authType && (
+                      isNewUser && (
                         <React.Fragment>
 
                         <InputContainer >
@@ -250,7 +252,7 @@ const Auth: NextPage = () => {
                       />
                   </FormControl>
                   </InputContainer>
-                  {!authType && 
+                  {isNewUser && 
                       <FlexEnd sx={{pr: 4, pb: 1}}>
                         <Tooltip 
                         TransitionComponent={Fade}
@@ -262,7 +264,7 @@ const Auth: NextPage = () => {
                       </FlexEnd>
                     }
                     {
-                      !authType && (
+                      isNewUser && (
                         <InputContainer >
                     <FormControl sx={{width: '100%'}} error={!confirmPasswordError ? false : true} >
                       <FilledInput
@@ -293,9 +295,9 @@ const Auth: NextPage = () => {
 
                     <CenteredDiv sx={{width: '100%', mt: 2, mb: 1, pr: 1}}>
 
-                    <Button  variant="contained" type="submit" fullWidth sx={{p:2}}>{authType ? "Log In" : "Create Account"}</Button>
+                    <Button  variant="contained" type="submit" fullWidth sx={{p:2}}>{!isNewUser ? "Log In" : "Create Account"}</Button>
                     </CenteredDiv>
-                    {authType && 
+                    {!isNewUser && 
                       <Typography color='black' variant='body1'>
                           
                           <Button variant='text' sx={{textTransform: 'capitalize'}} href='/auth/forgotten_password'>
@@ -308,6 +310,7 @@ const Auth: NextPage = () => {
                 
                   </form>
         </Box>
+        {/* </CenteredDiv> */}
     </Box>
   )
 }
